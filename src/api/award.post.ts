@@ -6,7 +6,7 @@
 // Response:     { success: true, newTotal: number }
 
 export default defineEventHandler(async (event) => {
-  const { userRoles, db } = event.context.newguild
+  const { userRoles, db } = event.context.newguildplus
 
   // Double-check role even though the manifest already enforces it.
   // Defense in depth: reject if somehow the host check was bypassed.

@@ -105,7 +105,7 @@
 </template>
 
 <script setup lang="ts">
-// Composables are globally injected by the NewGuild host — do NOT import them
+// Composables are globally injected by the NewGuildPlus host — do NOT import them
 const { t } = useI18n()
 const { hasRole } = useAuth()
 const config = useAppConfig()

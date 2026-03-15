@@ -1,6 +1,6 @@
-# NewGuild App Template
+# NewGuildPlus App Template
 
-A ready-to-use template for building NewGuild apps. Demonstrates all integration points: Hub pages, API routes, bot hooks, config fields, and i18n.
+A ready-to-use template for building NewGuildPlus apps. Demonstrates all integration points: Hub pages, API routes, bot hooks, config fields, and i18n.
 
 This template implements a **Community Points** system — members earn points for voice activity, moderators can award bonus points, and a leaderboard tracks the top contributors.
 
@@ -10,7 +10,7 @@ This template implements a **Community Points** system — members earn points f
 
 ```bash
 # Clone or copy this repository
-git clone https://github.com/your-username/newguild-app-template.git my-app
+git clone https://github.com/your-username/newguildplus-app-template.git my-app
 cd my-app
 
 # Remove the template's git history and start fresh
@@ -36,7 +36,7 @@ Edit `manifest.json`:
 
 ### 4. Sideload for testing
 
-1. Open your NewGuild instance as Admin
+1. Open your NewGuildPlus instance as Admin
 2. Go to **Admin → Apps → Sideload**
 3. Paste your GitHub repository URL
 4. Click **Load** and then **Activate**
@@ -51,7 +51,7 @@ See [docs/07-deployment.md](docs/07-deployment.md) for publishing steps.
 
 | File | Description |
 |------|-------------|
-| [docs/01-overview.md](docs/01-overview.md) | What NewGuild apps are and how they work |
+| [docs/01-overview.md](docs/01-overview.md) | What NewGuildPlus apps are and how they work |
 | [docs/02-manifest.md](docs/02-manifest.md) | Complete manifest field reference |
 | [docs/03-hub-integration.md](docs/03-hub-integration.md) | Pages, API routes, navigation |
 | [docs/04-bot-integration.md](docs/04-bot-integration.md) | Bot hook implementation |
@@ -66,7 +66,7 @@ For AI-assisted development, see [AGENTS.md](AGENTS.md).
 ## File Structure
 
 ```
-newguild-app-template/
+newguildplus-app-template/
 ├── manifest.json          ← App definition (sideloadable)
 ├── README.md
 ├── AGENTS.md              ← AI agent guidance

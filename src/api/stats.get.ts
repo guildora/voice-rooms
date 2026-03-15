@@ -3,7 +3,7 @@
 // Access: requiredRoles: ["user"] (enforced by host before this runs)
 
 export default defineEventHandler(async (event) => {
-  const { userId, db } = event.context.newguild
+  const { userId, db } = event.context.newguildplus
 
   // Read query param to decide how much leaderboard data to return
   const query = getQuery(event)

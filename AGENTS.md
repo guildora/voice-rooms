@@ -1,12 +1,12 @@
-# AGENTS.md — NewGuild App Development Guide for AI Agents
+# AGENTS.md — NewGuildPlus App Development Guide for AI Agents
 
-This file is the primary reference for AI agents (Claude, Copilot, Cursor, etc.) building NewGuild apps. Read this before writing any code.
+This file is the primary reference for AI agents (Claude, Copilot, Cursor, etc.) building NewGuildPlus apps. Read this before writing any code.
 
 ---
 
 ## Table of Contents
 
-1. [What is a NewGuild App?](#1-what-is-a-newguild-app)
+1. [What is a NewGuildPlus App?](#1-what-is-a-newguildplus-app)
 2. [Manifest Schema](#2-manifest-schema)
 3. [Hub Integration](#3-hub-integration)
 4. [Bot Integration](#4-bot-integration)
@@ -20,9 +20,9 @@ This file is the primary reference for AI agents (Claude, Copilot, Cursor, etc.)
 
 ---
 
-## 1. What is a NewGuild App?
+## 1. What is a NewGuildPlus App?
 
-NewGuild is a community platform with a **Hub** (web frontend) and a **Bot** (Discord-like event processor). Apps extend both layers.
+NewGuildPlus is a community platform with a **Hub** (web frontend) and a **Bot** (Discord-like event processor). Apps extend both layers.
 
 An app is a **GitHub repository** containing:
 - `manifest.json` — machine-readable app definition
@@ -33,7 +33,7 @@ An app is a **GitHub repository** containing:
 
 Apps are loaded via URL (`/api/admin/apps/sideload`), activated per-guild, and configured through the Admin UI.
 
-**Key constraint**: Apps run inside the NewGuild host process. They are NOT separate services. There is no separate server to deploy.
+**Key constraint**: Apps run inside the NewGuildPlus host process. They are NOT separate services. There is no separate server to deploy.
 
 ---
 
@@ -244,7 +244,7 @@ Pages live in `src/pages/` and are standard Vue 3 SFCs (Single File Components).
 </template>
 
 <script setup lang="ts">
-// Composables provided by the NewGuild host
+// Composables provided by the NewGuildPlus host
 const { t } = useI18n()
 const { user, hasRole } = useAuth()
 const config = useAppConfig()  // access configFields values
@@ -269,8 +269,8 @@ Handlers are standard Nitro `defineEventHandler` functions.
 ```typescript
 // src/api/stats.get.ts
 export default defineEventHandler(async (event) => {
-  // context injected by NewGuild host
-  const { guildId, userId, userRoles, config, db } = event.context.newguild
+  // context injected by NewGuildPlus host
+  const { guildId, userId, userRoles, config, db } = event.context.newguildplus
 
   // db is a guild-scoped key-value store
   const points = await db.get(`points:${userId}`) ?? 0
@@ -279,7 +279,7 @@ export default defineEventHandler(async (event) => {
 })
 ```
 
-**event.context.newguild** fields:
+**event.context.newguildplus** fields:
 - `guildId: string` — current guild ID
 - `userId: string` — authenticated user ID (undefined if no auth)
 - `userRoles: string[]` — roles of the current user
@@ -297,7 +297,7 @@ await db.list(prefix: string): Promise<{ key: string; value: any }[]>
 **Auth guards**: `requiredRoles` in the manifest is enforced before the handler runs. Inside the handler you can do additional checks:
 
 ```typescript
-if (!event.context.newguild.userRoles.includes('moderator')) {
+if (!event.context.newguildplus.userRoles.includes('moderator')) {
   throw createError({ statusCode: 403, message: 'Forbidden' })
 }
 ```
@@ -310,7 +310,7 @@ All bot hooks are exported from a single file: `src/bot/hooks.ts`.
 
 ```typescript
 // src/bot/hooks.ts
-import type { BotContext, VoiceActivityPayload, RoleChangePayload } from '@newguild/app-sdk'
+import type { BotContext, VoiceActivityPayload, RoleChangePayload } from '@newguildplus/app-sdk'
 
 export async function onVoiceActivity(payload: VoiceActivityPayload, ctx: BotContext) {
   const { memberId, action, channelId, durationSeconds } = payload
@@ -408,7 +408,7 @@ In manifest `requiredRoles`, specify the **minimum** role. The system grants acc
 In code:
 ```typescript
 // Check in API handler
-const { userRoles } = event.context.newguild
+const { userRoles } = event.context.newguildplus
 const privileged = ['moderator', 'admin', 'superadmin']
 if (!userRoles.some(r => privileged.includes(r))) {
   throw createError({ statusCode: 403 })
@@ -427,7 +427,7 @@ Config values are set per-guild by admins in the App Settings UI.
 
 Access in API handlers:
 ```typescript
-const { config } = event.context.newguild
+const { config } = event.context.newguildplus
 const rate = config.pointsPerMinute ?? 1  // always provide a fallback
 ```
 
@@ -487,7 +487,7 @@ The host automatically selects the language based on the user's locale preferenc
 
 ## 8. Design System
 
-NewGuild uses **Retro-morphism** — a design aesthetic combining retro/pixel-art elements with modern neumorphism.
+NewGuildPlus uses **Retro-morphism** — a design aesthetic combining retro/pixel-art elements with modern neumorphism.
 
 ### Key principles
 - **Font**: Nunito (rounded, friendly). Always use `font-nunito` class.
@@ -528,11 +528,11 @@ Tailwind CSS is available. Use utility classes freely.
 
 ## 9. Sideloading Workflow
 
-To test your app on a live NewGuild instance:
+To test your app on a live NewGuildPlus instance:
 
 1. Push your code to a **public** GitHub repository
 2. Ensure `manifest.json` is at the **root** of the default branch
-3. In NewGuild, navigate to **Admin → Apps**
+3. In NewGuildPlus, navigate to **Admin → Apps**
 4. Click **Sideload App**
 5. Enter your repository URL: `https://github.com/username/repo`
 6. Click **Load** — the system fetches and validates `manifest.json`

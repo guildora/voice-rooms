@@ -24,8 +24,9 @@
     ],
     "panelGroups": [
       {
+        "id": "points-group",
         "railItemId": "points",
-        "entries": [
+        "items": [
           {
             "id": "points-overview",
             "label": "Overview",
@@ -48,15 +49,18 @@
   },
   "permissions": [
     {
-      "key": "read:member",
+      "id": "read:member",
+      "label": "Read members",
       "description": "Read member profiles and roles"
     },
     {
-      "key": "write:member",
+      "id": "write:member",
+      "label": "Write members",
       "description": "Update member point balances"
     },
     {
-      "key": "read:voice",
+      "id": "read:voice",
+      "label": "Read voice activity",
       "description": "Track voice channel activity"
     }
   ],
@@ -64,29 +68,27 @@
     {
       "id": "points-overview",
       "path": "/apps/community-points",
-      "file": "src/pages/index.vue",
+      "title": "Points Overview",
       "requiredRoles": ["user"]
     },
     {
       "id": "points-leaderboard",
       "path": "/apps/community-points/leaderboard",
-      "file": "src/pages/leaderboard.vue",
+      "title": "Leaderboard",
       "requiredRoles": ["user"]
     }
   ],
   "apiRoutes": [
     {
-      "id": "stats-get",
       "method": "GET",
       "path": "/api/apps/community-points/stats",
-      "file": "src/api/stats.get.ts",
+      "handler": "src/api/stats.get.ts",
       "requiredRoles": ["user"]
     },
     {
-      "id": "award-post",
       "method": "POST",
       "path": "/api/apps/community-points/award",
-      "file": "src/api/award.post.ts",
+      "handler": "src/api/award.post.ts",
       "requiredRoles": ["moderator"]
     }
   ],
@@ -97,16 +99,14 @@
       "type": "number",
       "label": "Points per voice minute",
       "description": "How many points a member earns for each minute spent in a voice channel.",
-      "default": 1,
-      "min": 0,
-      "max": 100
+      "defaultValue": 1
     },
     {
       "key": "leaderboardVisible",
       "type": "boolean",
       "label": "Public leaderboard",
       "description": "Whether the leaderboard is visible to all members or only moderators.",
-      "default": true
+      "defaultValue": true
     },
     {
       "key": "topTier",
@@ -114,14 +114,14 @@
       "label": "Top tier role",
       "description": "The role automatically assigned to the top 3 members on the leaderboard.",
       "options": ["bronze", "silver", "gold"],
-      "default": "gold"
+      "defaultValue": "gold"
     },
     {
       "key": "welcomeMessage",
       "type": "string",
       "label": "Welcome message",
       "description": "Message sent to new members when they join. Supports {username} placeholder.",
-      "default": "Welcome {username}! You start with 0 points."
+      "defaultValue": "Welcome {username}! You start with 0 points."
     }
   ],
   "requiredEnv": [],

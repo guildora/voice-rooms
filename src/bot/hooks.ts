@@ -1,8 +1,8 @@
 // Bot hook handlers for Community Points.
 // All hooks declared in manifest.botHooks must be exported here.
-// The NewGuild host calls these functions when the corresponding events fire.
+// The NewGuildPlus host calls these functions when the corresponding events fire.
 
-import type { BotContext, VoiceActivityPayload, RoleChangePayload } from '@newguild/app-sdk'
+import type { BotContext, VoiceActivityPayload, RoleChangePayload } from '@newguildplus/app-sdk'
 
 /**
  * onVoiceActivity — fires when a member joins, leaves, or moves in voice.
