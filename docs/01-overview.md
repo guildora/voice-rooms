@@ -1,19 +1,19 @@
-# 01 — Overview: What are NewGuildPlus Apps?
+# 01 — Overview: What are Guildora Apps?
 
 ## Architecture
 
-NewGuildPlus consists of two runtime layers:
+Guildora consists of two runtime layers:
 
 - **Hub** — a Nuxt/Vue web application. Members interact with it via browser.
 - **Bot** — an event processor that handles guild events (voice, messages, role changes).
 
-Apps extend both layers from a single repository. They run **inside** the NewGuildPlus host process — there is no separate server to deploy.
+Apps extend both layers from a single repository. They run **inside** the Guildora host process — there is no separate server to deploy.
 
 ```
 GitHub Repo (your app)
     │
     ▼
-NewGuildPlus Host (loads app at install time)
+Guildora Host (loads app at install time)
     ├─ Hub renders your Vue pages
     ├─ Nitro serves your API routes
     └─ Bot calls your hook handlers on events
@@ -35,8 +35,8 @@ NewGuildPlus Host (loads app at install time)
 | Add sidebar navigation | `manifest.navigation.rail` + `panelGroups` |
 | Add API endpoints | `src/api/*.ts` + `manifest.apiRoutes` |
 | React to voice/message/role events | `src/bot/hooks.ts` + `manifest.botHooks` |
-| Store per-guild data | `ctx.db` / `event.context.newguildplus.db` |
-| Read admin config | `ctx.config` / `event.context.newguildplus.config` |
+| Store per-guild data | `ctx.db` / `event.context.guildora.db` |
+| Read admin config | `ctx.config` / `event.context.guildora.config` |
 | Show translated UI | `src/i18n/*.json` + `useI18n()` |
 
 ## Isolation

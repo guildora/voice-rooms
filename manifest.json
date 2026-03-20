@@ -1,128 +1,64 @@
 {
-  "id": "my-app",
-  "name": "My App",
+  "id": "guildora-app-template",
+  "name": "Template",
   "version": "1.0.0",
   "author": "your-github-username",
-  "description": "A short description of what your app does.",
-  "repositoryUrl": "https://github.com/your-github-username/my-app",
+  "description": "The official Guildora app template — demonstrates all integration patterns: Hub pages, API routes, bot hooks, config fields, and i18n.",
+  "repositoryUrl": "https://github.com/your-github-username/guildora-app-template",
   "license": "MIT",
-  "compatibility": {
-    "core": {
-      "minVersion": "0.1.0"
-    }
-  },
+  "compatibility": { "core": { "minVersion": "0.1.0" } },
   "navigation": {
     "rail": [
-      {
-        "id": "my-app",
-        "icon": "puzzle",
-        "label": "My App",
-        "to": "/apps/my-app",
-        "order": 50,
-        "requiredRoles": ["user"]
-      }
+      { "id": "guildora-app-template", "icon": "puzzle-piece", "label": "Template",
+        "to": "/apps/guildora-app-template", "order": 50, "requiredRoles": ["user"] }
     ],
-    "panelGroups": [
-      {
-        "id": "my-app-group",
-        "railItemId": "my-app",
-        "items": [
-          {
-            "id": "my-app-overview",
-            "label": "Overview",
-            "to": "/apps/my-app",
-            "requiredRoles": ["user"]
-          },
-          {
-            "id": "my-app-admin",
-            "label": "Manage",
-            "to": "/apps/my-app/admin",
-            "requiredRoles": ["moderator"]
-          }
-        ]
-      }
-    ]
+    "panelGroups": [{
+      "railItemId": "guildora-app-template",
+      "items": [
+        { "id": "template-app",   "label": "App",        "to": "/apps/guildora-app-template",       "requiredRoles": ["moderator"] },
+        { "id": "template-mod",   "label": "Moderation", "to": "/apps/guildora-app-template/mod",   "requiredRoles": ["moderator"] },
+        { "id": "template-admin", "label": "Admin",       "to": "/apps/guildora-app-template/admin", "requiredRoles": ["admin"] }
+      ]
+    }]
   },
   "permissions": [
-    {
-      "id": "read:member",
-      "label": "Read members",
-      "description": "Read member profiles and roles",
-      "required": false
-    }
+    { "id": "read:member",    "label": "Read members",     "description": "Read member profiles and roles", "required": false },
+    { "id": "write:messages", "label": "Send messages",    "description": "Send messages to channels",      "required": false }
   ],
   "pages": [
-    {
-      "id": "my-app-overview",
-      "path": "/apps/my-app",
-      "title": "My App",
-      "requiredRoles": ["user"],
-      "component": "src/pages/index.vue"
-    },
-    {
-      "id": "my-app-admin",
-      "path": "/apps/my-app/admin",
-      "title": "Manage",
-      "requiredRoles": ["moderator"],
-      "component": "src/pages/admin.vue"
-    }
+    { "id": "template-app",   "path": "/apps/guildora-app-template",       "title": "Template",   "requiredRoles": ["user"],      "component": "src/pages/index.vue" },
+    { "id": "template-mod",   "path": "/apps/guildora-app-template/mod",   "title": "Moderation", "requiredRoles": ["moderator"], "component": "src/pages/mod.vue" },
+    { "id": "template-admin", "path": "/apps/guildora-app-template/admin", "title": "Admin",      "requiredRoles": ["admin"],     "component": "src/pages/admin.vue" }
   ],
   "apiRoutes": [
-    {
-      "method": "GET",
-      "path": "/api/apps/my-app/stats",
-      "handler": "src/api/stats.get.ts",
-      "requiredRoles": ["user"]
-    },
-    {
-      "method": "POST",
-      "path": "/api/apps/my-app/award",
-      "handler": "src/api/award.post.ts",
-      "requiredRoles": ["moderator"]
-    },
-    {
-      "method": "GET",
-      "path": "/api/apps/my-app/config",
-      "handler": "src/api/config.get.ts",
-      "requiredRoles": ["moderator"]
-    },
-    {
-      "method": "POST",
-      "path": "/api/apps/my-app/reset",
-      "handler": "src/api/reset.post.ts",
-      "requiredRoles": ["moderator"]
-    }
+    { "method": "GET",  "path": "/api/apps/guildora-app-template/overview",  "handler": "src/api/overview.get.ts",  "requiredRoles": ["user"] },
+    { "method": "POST", "path": "/api/apps/guildora-app-template/announce",  "handler": "src/api/announce.post.ts", "requiredRoles": ["moderator"] },
+    { "method": "GET",  "path": "/api/apps/guildora-app-template/config",    "handler": "src/api/config.get.ts",    "requiredRoles": ["admin"] },
+    { "method": "GET",  "path": "/api/apps/guildora-app-template/settings",  "handler": "src/api/settings.get.ts",  "requiredRoles": ["admin"] }
   ],
   "botHooks": ["onVoiceActivity", "onRoleChange", "onMemberJoin", "onInteraction"],
   "configFields": [
     {
-      "key": "leaderboardVisible",
+      "key": "welcomeEnabled",
       "type": "boolean",
-      "label": "Show leaderboard",
-      "description": "Make the leaderboard visible to all users.",
+      "label": "Enable welcome messages",
+      "description": "Send a welcome message when a new member joins the server.",
       "defaultValue": true
     },
     {
-      "key": "pointsPerMinute",
-      "type": "number",
-      "label": "Points per voice-minute",
-      "description": "How many points a member earns per minute spent in voice.",
-      "defaultValue": 1
+      "key": "welcomeMessage",
+      "type": "string",
+      "label": "Welcome message",
+      "description": "Message sent on member join. Use {username} as a placeholder.",
+      "defaultValue": "Welcome to the server, {username}!"
     },
     {
-      "key": "topTier",
+      "key": "announcementChannelId",
       "type": "string",
-      "label": "Top-tier role name",
-      "description": "Discord role name awarded to the leaderboard top 3.",
-      "defaultValue": "gold"
-    },
-    {
-      "key": "welcomeChannelId",
-      "type": "string",
-      "label": "Welcome channel ID",
-      "description": "Discord channel ID for welcome messages on member join."
+      "label": "Announcement channel ID",
+      "description": "Discord channel ID where moderator announcements are posted."
     }
   ],
   "requiredEnv": [],
-  "installNotes": "Set pointsPerMinute and welcomeChannelId in the app config to get started."
+  "installNotes": "Set welcomeMessage and announcementChannelId in App Settings to get started."
 }

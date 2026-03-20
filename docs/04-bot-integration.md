@@ -10,7 +10,7 @@ All hooks receive a typed payload and a `BotContext`.
 
 ```typescript
 // src/bot/hooks.ts
-import type { BotContext, VoiceActivityPayload, RoleChangePayload, MessagePayload, MemberJoinPayload } from '@newguildplus/app-sdk'
+import type { BotContext, VoiceActivityPayload, RoleChangePayload, MessagePayload, MemberJoinPayload } from '@guildora/app-sdk'
 
 // Only export handlers for events listed in manifest.botHooks
 export async function onVoiceActivity(payload: VoiceActivityPayload, ctx: BotContext) { }

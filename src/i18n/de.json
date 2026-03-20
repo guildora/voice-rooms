@@ -1,26 +1,70 @@
 {
-  "title": "My App",
-  "subtitle": "Eine kurze Beschreibung, was deine App macht.",
-  "leaderboard": "Bestenliste",
-  "leaderboardSubtitle": "Die aktivsten Mitglieder nach Punkten.",
-  "leaderboardPrivate": "Die Bestenliste ist aktuell privat.",
-  "yourPoints": "Deine Punkte",
-  "rank": "Rang",
-  "member": "Mitglied",
-  "points": "Punkte",
-  "you": "du",
-  "viewAll": "Alle anzeigen",
-  "back": "Zurück",
-  "noData": "Noch keine Daten. Sei aktiv in Sprachkanälen!",
-  "loading": "Lädt…",
-  "awardPoints": "Punkte vergeben",
-  "award": "Vergeben",
-  "awarding": "Vergebe…",
-  "awardSuccess": "{amount} Punkte an {username} vergeben.",
-  "memberIdPlaceholder": "Mitglieds-ID",
-  "amountPlaceholder": "Anzahl",
+  "nav": {
+    "app": "App",
+    "mod": "Moderation",
+    "admin": "Admin"
+  },
+  "app": {
+    "title": "Template App",
+    "subtitle": "Eine Community-Übersicht, angetrieben vom Guildora App-Template.",
+    "welcome": "Willkommen zurück, {username}!",
+    "overview": {
+      "heading": "Community-Übersicht",
+      "membersTracked": "Erfasste Mitglieder",
+      "appActive": "App-Status",
+      "active": "Aktiv",
+      "noData": "Noch keine Daten. Die App befüllt sich, wenn Mitglieder interagieren."
+    }
+  },
+  "mod": {
+    "title": "Moderation",
+    "subtitle": "Ankündigungen senden und letzte Moderationsaktionen überprüfen.",
+    "announce": {
+      "heading": "Ankündigung senden",
+      "messagePlaceholder": "Schreibe deine Ankündigung…",
+      "submit": "Senden",
+      "submitting": "Sende…",
+      "success": "Ankündigung wurde an den konfigurierten Kanal gesendet.",
+      "noChannel": "Kein Ankündigungskanal konfiguriert. Setze einen in Admin → App-Einstellungen."
+    },
+    "log": {
+      "heading": "Letzte Aktionen",
+      "empty": "Keine Aktionen in dieser Sitzung aufgezeichnet.",
+      "announced": "Ankündigung gesendet: \"{message}\""
+    }
+  },
+  "admin": {
+    "title": "Admin",
+    "subtitle": "App-Konfiguration und zusammengefasste Statistiken anzeigen.",
+    "config": {
+      "heading": "Aktuelle Konfiguration",
+      "welcomeEnabled": "Willkommensnachrichten",
+      "welcomeMessage": "Willkommensnachricht",
+      "announcementChannelId": "Ankündigungskanal-ID",
+      "notSet": "Nicht konfiguriert"
+    },
+    "settings": {
+      "heading": "App-Statistiken",
+      "version": "App-Version",
+      "totalMembers": "Erfasste Mitglieder"
+    }
+  },
+  "bot": {
+    "command": {
+      "template": {
+        "response": "Die Template-App ist auf diesem Server aktiv. Nutze sie, um alle Guildora-Integrationsmuster zu erkunden.",
+        "notActive": "Die Template-App ist installiert, aber noch nicht konfiguriert."
+      }
+    }
+  },
   "error": {
-    "load": "Daten konnten nicht geladen werden. Bitte versuche es erneut.",
-    "award": "Punkte konnten nicht vergeben werden. Bitte versuche es erneut."
-  }
+    "load": "Daten konnten nicht geladen werden. Bitte die Seite neu laden.",
+    "announce": "Ankündigung konnte nicht gesendet werden: {message}",
+    "settings": "Einstellungen konnten nicht geladen werden. Bitte die Seite neu laden.",
+    "forbidden": "Du hast keine Berechtigung, diese Seite anzuzeigen."
+  },
+  "loading": "Lädt…",
+  "back": "Zurück",
+  "save": "Speichern",
+  "cancel": "Abbrechen"
 }

@@ -70,7 +70,7 @@ Handlers are Nitro `defineEventHandler` functions.
 ```typescript
 // src/api/stats.get.ts
 export default defineEventHandler(async (event) => {
-  const { guildId, userId, userRoles, config, db } = event.context.newguildplus
+  const { guildId, userId, userRoles, config, db } = event.context.guildora
 
   // Read from KV store
   const points = await db.get(`points:${userId}`) ?? 0
@@ -94,7 +94,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Invalid request' })
   }
 
-  const { db, userRoles } = event.context.newguildplus
+  const { db, userRoles } = event.context.guildora
   if (!userRoles.includes('moderator')) {
     throw createError({ statusCode: 403, message: 'Forbidden' })
   }

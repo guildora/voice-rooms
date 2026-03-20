@@ -1,83 +1,86 @@
 <template>
-  <div class="p-6 font-sans">
+  <div class="p-6 font-nunito">
     <!-- Page header -->
     <div class="mb-6">
       <h1 class="text-3xl font-bold" style="color: var(--color-text, #111)">
-        My App
+        {{ t('app.title') }}
       </h1>
       <p class="mt-1 text-sm" style="color: var(--color-text-muted, #666)">
-        A short description of what your app does.
+        {{ t('app.subtitle') }}
       </p>
     </div>
 
+    <!-- Welcome banner -->
+    <div
+      v-if="user"
+      class="mb-6 p-4 rounded-lg font-nunito"
+      style="background: var(--color-surface-alt, #f9fafb); border: 1px solid var(--color-border, #e5e7eb);"
+    >
+      <p style="color: var(--color-text, #111)">{{ t('app.welcome', { username: user.displayName }) }}</p>
+    </div>
+
     <!-- Loading state -->
-    <div v-if="pending" style="color: var(--color-text-muted, #666)">Loading…</div>
+    <div v-if="pending" class="font-nunito" style="color: var(--color-text-muted, #666)">
+      {{ t('loading') }}
+    </div>
 
     <!-- Error state -->
     <div
       v-else-if="error"
       style="border: 1px solid #f87171; background: #fef2f2; padding: 1rem; border-radius: 0.5rem; color: #b91c1c;"
     >
-      Failed to load stats. Please refresh the page.
+      {{ t('error.load') }}
     </div>
 
     <!-- Content -->
     <div v-else class="space-y-4">
-      <!-- Your points card -->
+      <!-- Community overview card -->
       <div
         style="border: 1px solid var(--color-border, #e5e7eb); background: var(--color-surface, #fff); padding: 1.5rem; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"
       >
-        <p class="text-sm font-semibold" style="color: var(--color-text-muted, #666); text-transform: uppercase; letter-spacing: 0.05em;">
-          Your Points
-        </p>
-        <p class="mt-1 text-4xl font-bold" style="color: var(--color-accent, #ff206e)">
-          {{ stats?.myPoints ?? 0 }}
-        </p>
-        <p class="mt-1 text-xs" style="color: var(--color-text-muted, #666)">
-          Rank: #{{ stats?.myRank ?? '—' }}
+        <h2 class="mb-4 font-bold font-nunito" style="color: var(--color-text, #111)">
+          {{ t('app.overview.heading') }}
+        </h2>
+        <dl style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div>
+            <dt class="text-xs font-semibold font-nunito" style="color: var(--color-text-muted, #666); text-transform: uppercase; letter-spacing: 0.05em;">
+              {{ t('app.overview.membersTracked') }}
+            </dt>
+            <dd class="mt-1 text-2xl font-bold font-nunito" style="color: var(--color-accent, #ff206e)">
+              {{ overview?.membersTracked ?? 0 }}
+            </dd>
+          </div>
+          <div>
+            <dt class="text-xs font-semibold font-nunito" style="color: var(--color-text-muted, #666); text-transform: uppercase; letter-spacing: 0.05em;">
+              {{ t('app.overview.appActive') }}
+            </dt>
+            <dd class="mt-1 text-2xl font-bold font-nunito" style="color: #16a34a;">
+              {{ t('app.overview.active') }}
+            </dd>
+          </div>
+        </dl>
+        <p v-if="!overview?.membersTracked" class="mt-4 text-sm font-nunito" style="color: var(--color-text-muted, #666)">
+          {{ t('app.overview.noData') }}
         </p>
       </div>
 
-      <!-- Leaderboard preview -->
-      <div
-        v-if="stats?.topMembers?.length"
-        style="border: 1px solid var(--color-border, #e5e7eb); background: var(--color-surface, #fff); padding: 1rem; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"
-      >
-        <h2 class="mb-3 font-bold" style="color: var(--color-text, #111)">Top Members</h2>
-        <ol>
-          <li
-            v-for="(entry, index) in stats.topMembers"
-            :key="entry.memberId"
-            style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.875rem; padding: 0.25rem 0;"
-          >
-            <span style="width: 1.25rem; text-align: right; font-weight: bold; color: var(--color-text-muted, #666)">
-              {{ index + 1 }}.
-            </span>
-            <span style="flex: 1; color: var(--color-text, #111)">{{ entry.displayName }}</span>
-            <span style="font-weight: 600; color: var(--color-accent, #ff206e)">{{ entry.points }}</span>
-          </li>
-        </ol>
+      <!-- Moderator shortcut -->
+      <div v-if="hasRole('moderator')">
+        <NuxtLink
+          to="/apps/guildora-app-template/mod"
+          class="text-sm font-nunito"
+          style="color: var(--color-accent, #ff206e); text-decoration: underline;"
+        >
+          {{ t('nav.mod') }} →
+        </NuxtLink>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+const { t } = useI18n()
+const { user, hasRole } = useAuth()
 
-const stats = ref(null)
-const pending = ref(true)
-const error = ref(null)
-
-onMounted(async () => {
-  try {
-    const res = await fetch('/api/apps/my-app/stats')
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    stats.value = await res.json()
-  } catch (e) {
-    error.value = e
-  } finally {
-    pending.value = false
-  }
-})
+const { data: overview, pending, error } = await useFetch('/api/apps/guildora-app-template/overview')
 </script>

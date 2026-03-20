@@ -8,7 +8,7 @@ Sideloading lets you load your app directly from a GitHub URL without going thro
 
 1. Push your code to a **public** GitHub repository
 2. Ensure `manifest.json` is at the **root** of the default branch (`main` or `master`)
-3. In your NewGuildPlus instance, go to **Admin → Apps → Sideload**
+3. In your Guildora instance, go to **Admin → Apps → Sideload**
 4. Enter your repository URL, e.g. `https://github.com/username/my-app`
 5. Click **Load** — the host fetches and validates `manifest.json`
 6. Review the displayed app info and click **Install**
@@ -31,7 +31,7 @@ Sideloading lets you load your app directly from a GitHub URL without going thro
 
 ## Marketplace Publishing
 
-To distribute your app through the NewGuildPlus Marketplace:
+To distribute your app through the Guildora Marketplace:
 
 ### Requirements
 
@@ -45,7 +45,7 @@ To distribute your app through the NewGuildPlus Marketplace:
 ### Submission
 
 1. Ensure your repo is public and the default branch is production-ready
-2. Go to the NewGuildPlus Marketplace developer portal
+2. Go to the Guildora Marketplace developer portal
 3. Click **Submit App**
 4. Enter your repository URL
 5. The review team will check your app for:

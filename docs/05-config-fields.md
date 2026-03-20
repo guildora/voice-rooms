@@ -56,7 +56,7 @@ All fields require: `key`, `type`, `label`, `default`.
 
 **In API handlers:**
 ```typescript
-const { config } = event.context.newguildplus
+const { config } = event.context.guildora
 const rate = config.pointsPerMinute ?? 1  // always provide fallback
 ```
 

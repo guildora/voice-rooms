@@ -1,12 +1,12 @@
-# AGENTS.md — NewGuildPlus App Development Guide for AI Agents
+# AGENTS.md — Guildora App Development Guide for AI Agents
 
-This file is the primary reference for AI agents (Claude, Copilot, Cursor, etc.) building NewGuildPlus apps. Read this before writing any code.
+This file is the primary reference for AI agents (Claude, Copilot, Cursor, etc.) building Guildora apps. Read this before writing any code.
 
 ---
 
 ## Table of Contents
 
-1. [What is a NewGuildPlus App?](#1-what-is-a-newguildplus-app)
+1. [What is a Guildora App?](#1-what-is-a-guildora-app)
 2. [Manifest Schema](#2-manifest-schema)
 3. [Hub Integration](#3-hub-integration)
 4. [Bot Integration](#4-bot-integration)
@@ -14,15 +14,16 @@ This file is the primary reference for AI agents (Claude, Copilot, Cursor, etc.)
 6. [Config Fields](#6-config-fields)
 7. [i18n](#7-i18n)
 8. [Design System](#8-design-system)
-9. [Sideloading Workflow](#9-sideloading-workflow)
-10. [Common Mistakes](#10-common-mistakes)
-11. [Test Checklist](#11-test-checklist)
+9. [Navigation Patterns](#9-navigation-patterns)
+10. [Sideloading Workflow](#10-sideloading-workflow)
+11. [Common Mistakes](#11-common-mistakes)
+12. [Test Checklist](#12-test-checklist)
 
 ---
 
-## 1. What is a NewGuildPlus App?
+## 1. What is a Guildora App?
 
-NewGuildPlus is a community platform with a **Hub** (web frontend) and a **Bot** (Discord-like event processor). Apps extend both layers.
+Guildora is a community platform with a **Hub** (web frontend) and a **Bot** (Discord-like event processor). Apps extend both layers.
 
 An app is a **GitHub repository** containing:
 - `manifest.json` — machine-readable app definition
@@ -33,7 +34,7 @@ An app is a **GitHub repository** containing:
 
 Apps are loaded via URL (`/api/admin/apps/sideload`), activated per-guild, and configured through the Admin UI.
 
-**Key constraint**: Apps run inside the NewGuildPlus host process. They are NOT separate services. There is no separate server to deploy.
+**Key constraint**: Apps run inside the Guildora host process. They are NOT separate services. There is no separate server to deploy.
 
 ---
 
@@ -45,8 +46,8 @@ The `manifest.json` at the repo root is required. Every field is documented belo
 
 ```jsonc
 {
-  "id": "my-app",              // required, unique kebab-case identifier
-  "name": "My App",            // required, human-readable display name
+  "id": "template",            // required, unique kebab-case identifier
+  "name": "Template",          // required, human-readable display name
   "version": "1.0.0",          // required, semver
   "author": "github-username", // required
   "description": "...",        // required, shown in marketplace
@@ -66,29 +67,35 @@ Defines where the app appears in the Hub sidebar.
 "navigation": {
   "rail": [
     {
-      "id": "my-rail-item",     // unique ID, referenced by panelGroups
-      "icon": "star",           // icon name (Material Symbols)
-      "label": "My App",        // displayed in rail tooltip
-      "to": "/apps/my-app",     // route of the landing page
+      "id": "template",         // unique ID, referenced by panelGroups
+      "icon": "puzzle-piece",   // icon name (Material Symbols)
+      "label": "Template",      // displayed in rail tooltip
+      "to": "/apps/template",   // route of the landing page
       "order": 50,              // position in rail (lower = higher up)
       "requiredRoles": ["user"] // minimum role to see this item
     }
   ],
   "panelGroups": [
     {
-      "railItemId": "my-rail-item", // must match a rail item id
-      "entries": [
+      "railItemId": "template", // must match a rail item id
+      "items": [
         {
-          "id": "my-overview",
-          "label": "Overview",
-          "to": "/apps/my-app",
-          "requiredRoles": ["user"]   // optional, defaults to no restriction
+          "id": "template-app",
+          "label": "App",
+          "to": "/apps/template",
+          "requiredRoles": ["moderator"]
         },
         {
-          "id": "my-admin",
-          "label": "Admin",
-          "to": "/apps/my-app/admin",
+          "id": "template-mod",
+          "label": "Moderation",
+          "to": "/apps/template/mod",
           "requiredRoles": ["moderator"]
+        },
+        {
+          "id": "template-admin",
+          "label": "Admin",
+          "to": "/apps/template/admin",
+          "requiredRoles": ["admin"]
         }
       ]
     }
@@ -96,15 +103,16 @@ Defines where the app appears in the Hub sidebar.
 }
 ```
 
+**Note**: Use `items` (not `entries`) in `panelGroups`.
+
 ### permissions
 
 Declare what data your app reads or writes. Users see these during install.
 
 ```jsonc
 "permissions": [
-  { "key": "read:member", "description": "Read member profiles" },
-  { "key": "write:member", "description": "Update member data" },
-  { "key": "read:voice",   "description": "Track voice activity" }
+  { "id": "read:member",    "label": "Read members",  "description": "Read member profiles and roles", "required": false },
+  { "id": "write:messages", "label": "Send messages", "description": "Send messages to channels",      "required": false }
 ]
 ```
 
@@ -117,16 +125,17 @@ Maps URL paths to Vue component files.
 ```jsonc
 "pages": [
   {
-    "id": "my-overview",
-    "path": "/apps/my-app",
-    "file": "src/pages/index.vue",
-    "requiredRoles": ["user"]
+    "id": "template-app",
+    "path": "/apps/template",
+    "title": "Template",
+    "requiredRoles": ["user"],
+    "component": "src/pages/index.vue"
   }
 ]
 ```
 
 - `path` must start with `/apps/`
-- `file` is relative to the repo root
+- `component` is relative to the repo root (use `component`, not `file`)
 - `requiredRoles` is enforced server-side; also add guards client-side
 
 ### apiRoutes
@@ -136,17 +145,15 @@ Maps HTTP endpoints to Nitro handler files.
 ```jsonc
 "apiRoutes": [
   {
-    "id": "my-get",
     "method": "GET",
-    "path": "/api/apps/my-app/data",
-    "file": "src/api/data.get.ts",
+    "path": "/api/apps/template/overview",
+    "handler": "src/api/overview.get.ts",
     "requiredRoles": ["user"]
   },
   {
-    "id": "my-post",
     "method": "POST",
-    "path": "/api/apps/my-app/action",
-    "file": "src/api/action.post.ts",
+    "path": "/api/apps/template/announce",
+    "handler": "src/api/announce.post.ts",
     "requiredRoles": ["moderator"]
   }
 ]
@@ -154,6 +161,7 @@ Maps HTTP endpoints to Nitro handler files.
 
 - `path` must start with `/api/apps/`
 - File naming convention: `<name>.<method>.ts`
+- Use `handler` (not `file`) for the handler path
 - `requiredRoles` is enforced by the host before the handler runs
 
 ### botHooks
@@ -161,7 +169,7 @@ Maps HTTP endpoints to Nitro handler files.
 List of bot event names this app handles.
 
 ```jsonc
-"botHooks": ["onVoiceActivity", "onRoleChange"]
+"botHooks": ["onVoiceActivity", "onRoleChange", "onMemberJoin", "onInteraction"]
 ```
 
 All available hook names:
@@ -169,6 +177,7 @@ All available hook names:
 - `onRoleChange` — member's roles are updated
 - `onMessage` — a message is sent in a text channel
 - `onMemberJoin` — a new member joins the guild
+- `onInteraction` — a slash command is used
 
 The corresponding handler must be exported from `src/bot/hooks.ts`.
 
@@ -179,32 +188,24 @@ Fields editable by admins in the App Settings UI.
 ```jsonc
 "configFields": [
   {
-    "key": "myNumber",     // accessed via config.myNumber in handlers
-    "type": "number",
-    "label": "My Number",
-    "description": "Optional help text shown below the field.",
-    "default": 10,
-    "min": 0,             // only for type: number
-    "max": 1000           // only for type: number
-  },
-  {
-    "key": "myFlag",
+    "key": "welcomeEnabled",
     "type": "boolean",
-    "label": "Enable Feature",
-    "default": false
+    "label": "Enable welcome messages",
+    "description": "Send a welcome message when a new member joins.",
+    "defaultValue": true
   },
   {
-    "key": "mySelect",
-    "type": "select",
-    "label": "Choose Option",
-    "options": ["alpha", "beta", "gamma"],
-    "default": "alpha"
-  },
-  {
-    "key": "myText",
+    "key": "welcomeMessage",
     "type": "string",
-    "label": "Custom Text",
-    "default": "Hello {username}"
+    "label": "Welcome message",
+    "description": "Use {username} as a placeholder.",
+    "defaultValue": "Welcome to the server, {username}!"
+  },
+  {
+    "key": "announcementChannelId",
+    "type": "string",
+    "label": "Announcement channel ID",
+    "description": "Discord channel ID where announcements are posted."
   }
 ]
 ```
@@ -224,7 +225,7 @@ Environment variables the admin must configure on the server.
 A plain-text string displayed to the admin after installation.
 
 ```jsonc
-"installNotes": "After install, configure the API key in server settings."
+"installNotes": "After install, configure the announcement channel in App Settings."
 ```
 
 ---
@@ -237,20 +238,19 @@ Pages live in `src/pages/` and are standard Vue 3 SFCs (Single File Components).
 
 ```vue
 <template>
-  <div class="p-6">
-    <h1 class="text-2xl font-bold font-nunito">{{ t('title') }}</h1>
-    <p>{{ stats.totalPoints }}</p>
+  <div class="p-6 font-nunito">
+    <h1 class="text-2xl font-bold font-nunito">{{ t('app.title') }}</h1>
+    <p>{{ overview.membersTracked }}</p>
   </div>
 </template>
 
-<script setup lang="ts">
-// Composables provided by the NewGuildPlus host
+<script setup>
+// Composables provided by the Guildora host — NO imports needed
 const { t } = useI18n()
 const { user, hasRole } = useAuth()
-const config = useAppConfig()  // access configFields values
 
 // Fetch from your app's API route
-const { data: stats } = await useFetch('/api/apps/my-app/stats')
+const { data: overview } = await useFetch('/api/apps/template/overview')
 </script>
 ```
 
@@ -260,26 +260,26 @@ const { data: stats } = await useFetch('/api/apps/my-app/stats')
 - `useAppConfig()` — key/value object of all configField values
 - `useFetch()` — standard Nuxt `useFetch`, scoped to host origin
 
-**Routing**: Pages are lazy-loaded. Use `<NuxtLink to="/apps/my-app/other">` for internal navigation.
+**Routing**: Pages are lazy-loaded. Use `<NuxtLink to="/apps/template/mod">` for internal navigation.
 
 ### Nitro API Routes
 
 Handlers are standard Nitro `defineEventHandler` functions.
 
 ```typescript
-// src/api/stats.get.ts
+// src/api/overview.get.ts
 export default defineEventHandler(async (event) => {
-  // context injected by NewGuildPlus host
-  const { guildId, userId, userRoles, config, db } = event.context.newguildplus
+  // context injected by Guildora host
+  const { guildId, userId, userRoles, config, db } = event.context.guildora
 
   // db is a guild-scoped key-value store
-  const points = await db.get(`points:${userId}`) ?? 0
+  const members = await db.list('member:')
 
-  return { points }
+  return { membersTracked: members.length, appActive: true }
 })
 ```
 
-**event.context.newguildplus** fields:
+**event.context.guildora** fields:
 - `guildId: string` — current guild ID
 - `userId: string` — authenticated user ID (undefined if no auth)
 - `userRoles: string[]` — roles of the current user
@@ -297,7 +297,7 @@ await db.list(prefix: string): Promise<{ key: string; value: any }[]>
 **Auth guards**: `requiredRoles` in the manifest is enforced before the handler runs. Inside the handler you can do additional checks:
 
 ```typescript
-if (!event.context.newguildplus.userRoles.includes('moderator')) {
+if (!event.context.guildora.userRoles.includes('moderator')) {
   throw createError({ statusCode: 403, message: 'Forbidden' })
 }
 ```
@@ -310,23 +310,29 @@ All bot hooks are exported from a single file: `src/bot/hooks.ts`.
 
 ```typescript
 // src/bot/hooks.ts
-import type { BotContext, VoiceActivityPayload, RoleChangePayload } from '@newguildplus/app-sdk'
+import type { BotContext, VoiceActivityPayload, RoleChangePayload, MemberJoinPayload, InteractionPayload } from '@guildora/app-sdk'
 
 export async function onVoiceActivity(payload: VoiceActivityPayload, ctx: BotContext) {
-  const { memberId, action, channelId, durationSeconds } = payload
-  // action: 'join' | 'leave' | 'move'
-
-  if (action === 'leave' && durationSeconds) {
-    const pointsPerMinute = ctx.config.pointsPerMinute ?? 1
-    const earned = Math.floor(durationSeconds / 60) * pointsPerMinute
-    const current = await ctx.db.get(`points:${memberId}`) ?? 0
-    await ctx.db.set(`points:${memberId}`, current + earned)
+  if (payload.action === 'join') {
+    await ctx.db.set(`member:${payload.memberId}`, { lastSeen: new Date().toISOString() })
   }
 }
 
 export async function onRoleChange(payload: RoleChangePayload, ctx: BotContext) {
   const { memberId, addedRoles, removedRoles } = payload
   // handle role changes
+}
+
+export async function onMemberJoin(payload: MemberJoinPayload, ctx: BotContext) {
+  const channelId = ctx.config.announcementChannelId as string | undefined
+  if (channelId) {
+    await ctx.bot.sendMessage(channelId, `Welcome, <@${payload.memberId}>!`)
+  }
+}
+
+export async function onInteraction(payload: InteractionPayload, ctx: BotContext) {
+  if (payload.commandName !== 'template') return
+  await ctx.db.set(`audit:${payload.memberId}:${Date.now()}`, { command: 'template', at: payload.occurredAt })
 }
 ```
 
@@ -379,6 +385,12 @@ interface MemberJoinPayload {
   memberId: string
   joinedAt: string  // ISO date string
 }
+
+interface InteractionPayload {
+  memberId: string
+  commandName: string
+  occurredAt: string  // ISO date string
+}
 ```
 
 ---
@@ -393,7 +405,7 @@ temporaer → user → moderator → admin → superadmin
 
 - **temporaer**: Guest/unverified. Can see public pages only.
 - **user**: Verified member. Standard access.
-- **moderator**: Trusted member. Can manage other users, award points.
+- **moderator**: Trusted member. Can manage other users, send announcements.
 - **admin**: Guild administrator. Can configure apps, manage roles.
 - **superadmin**: Platform owner. Full access, including server settings.
 
@@ -408,7 +420,7 @@ In manifest `requiredRoles`, specify the **minimum** role. The system grants acc
 In code:
 ```typescript
 // Check in API handler
-const { userRoles } = event.context.newguildplus
+const { userRoles } = event.context.guildora
 const privileged = ['moderator', 'admin', 'superadmin']
 if (!userRoles.some(r => privileged.includes(r))) {
   throw createError({ statusCode: 403 })
@@ -416,7 +428,7 @@ if (!userRoles.some(r => privileged.includes(r))) {
 
 // Check in Vue page
 const { hasRole } = useAuth()
-if (hasRole('moderator')) { /* show admin UI */ }
+if (hasRole('moderator')) { /* show mod UI */ }
 ```
 
 ---
@@ -427,19 +439,19 @@ Config values are set per-guild by admins in the App Settings UI.
 
 Access in API handlers:
 ```typescript
-const { config } = event.context.newguildplus
-const rate = config.pointsPerMinute ?? 1  // always provide a fallback
+const { config } = event.context.guildora
+const channelId = config.announcementChannelId ?? null  // always provide a fallback
 ```
 
 Access in Vue pages:
 ```typescript
 const config = useAppConfig()
-const isPublic = config.leaderboardVisible  // true/false
+const enabled = config.welcomeEnabled  // true/false
 ```
 
 Access in bot hooks:
 ```typescript
-const rate = ctx.config.pointsPerMinute ?? 1
+const enabled = (ctx.config.welcomeEnabled as boolean) ?? true
 ```
 
 **Always use fallbacks** — config values can be undefined if not yet set.
@@ -453,32 +465,28 @@ Translation files are in `src/i18n/`. At minimum provide `en.json` and `de.json`
 ```json
 // src/i18n/en.json
 {
-  "title": "Community Points",
-  "points": "Points",
-  "leaderboard": "Leaderboard",
-  "rank": "Rank",
-  "member": "Member",
-  "earned": "{count} points earned"
+  "app": {
+    "title": "Template App",
+    "welcome": "Welcome back, {username}!"
+  }
 }
 ```
 
 ```json
 // src/i18n/de.json
 {
-  "title": "Community-Punkte",
-  "points": "Punkte",
-  "leaderboard": "Bestenliste",
-  "rank": "Rang",
-  "member": "Mitglied",
-  "earned": "{count} Punkte verdient"
+  "app": {
+    "title": "Template App",
+    "welcome": "Willkommen zurück, {username}!"
+  }
 }
 ```
 
-In Vue:
+In Vue (no import needed):
 ```typescript
 const { t } = useI18n()
-// t('title') → "Community Points"
-// t('earned', { count: 42 }) → "42 points earned"
+// t('app.title') → "Template App"
+// t('app.welcome', { username: 'Alice' }) → "Welcome back, Alice!"
 ```
 
 The host automatically selects the language based on the user's locale preference.
@@ -487,7 +495,7 @@ The host automatically selects the language based on the user's locale preferenc
 
 ## 8. Design System
 
-NewGuildPlus uses **Retro-morphism** — a design aesthetic combining retro/pixel-art elements with modern neumorphism.
+Guildora uses **Retro-morphism** — a design aesthetic combining retro/pixel-art elements with modern neumorphism.
 
 ### Key principles
 - **Font**: Nunito (rounded, friendly). Always use `font-nunito` class.
@@ -526,13 +534,45 @@ Tailwind CSS is available. Use utility classes freely.
 
 ---
 
-## 9. Sideloading Workflow
+## 9. Navigation Patterns
 
-To test your app on a live NewGuildPlus instance:
+### User-without-submenu pattern
+
+When you want plain users to navigate directly to a page (no panel) but moderators to see a submenu:
+
+- Set the **rail item** `requiredRoles: ["user"]` — all members see it
+- Set all **panel items** `requiredRoles: ["moderator"]` or higher
+
+Result:
+- Plain user → no panel shows → rail click navigates directly to the `to` URL
+- Moderator → panel opens with App + Moderation items
+- Admin → panel opens with App + Moderation + Admin items
+
+```jsonc
+"navigation": {
+  "rail": [
+    { "id": "template", "to": "/apps/template", "requiredRoles": ["user"] }
+  ],
+  "panelGroups": [{
+    "railItemId": "template",
+    "items": [
+      { "id": "template-app",   "to": "/apps/template",       "requiredRoles": ["moderator"] },
+      { "id": "template-mod",   "to": "/apps/template/mod",   "requiredRoles": ["moderator"] },
+      { "id": "template-admin", "to": "/apps/template/admin", "requiredRoles": ["admin"] }
+    ]
+  }]
+}
+```
+
+---
+
+## 10. Sideloading Workflow
+
+To test your app on a live Guildora instance:
 
 1. Push your code to a **public** GitHub repository
 2. Ensure `manifest.json` is at the **root** of the default branch
-3. In NewGuildPlus, navigate to **Admin → Apps**
+3. In Guildora, navigate to **Admin → Apps**
 4. Click **Sideload App**
 5. Enter your repository URL: `https://github.com/username/repo`
 6. Click **Load** — the system fetches and validates `manifest.json`
@@ -545,7 +585,7 @@ To update a sideloaded app:
 
 ---
 
-## 10. Common Mistakes
+## 11. Common Mistakes
 
 ### manifest.json
 
@@ -556,6 +596,10 @@ To update a sideloaded app:
 | `apiRoutes[].path` doesn't start with `/api/apps/` | Must be `/api/apps/your-app-id/...` |
 | `panelGroups[].railItemId` doesn't match a `rail[].id` | IDs must match exactly |
 | Bot hook name typo (e.g. `onVoiceactivty`) | Check capitalization against hook list |
+| Using `entries` in `panelGroups` | Use `items` instead |
+| Using `file` in `pages` | Use `component` instead |
+| Using `file` in `apiRoutes` | Use `handler` instead |
+| Missing `onInteraction` when using slash commands | Add to `botHooks` and export from `hooks.ts` |
 
 ### API Handlers
 
@@ -582,22 +626,30 @@ To update a sideloaded app:
 | Hook not exported from `src/bot/hooks.ts` | Export must be a named export matching the hook name |
 | Forgetting `await` on `db.set` | Always `await` async db calls |
 | Accessing `payload.durationSeconds` on 'join' | Only available on 'leave' and 'move' |
+| Missing `onInteraction` export | Must be exported if listed in `botHooks` |
 
 ---
 
-## 11. Test Checklist
+## 12. Test Checklist
 
 Before publishing, verify:
 
 - [ ] `manifest.json` is valid JSON (no trailing commas, no comments)
-- [ ] All `pages[].file` paths point to existing files
-- [ ] All `apiRoutes[].file` paths point to existing files
+- [ ] All `pages[].component` paths point to existing files
+- [ ] All `apiRoutes[].handler` paths point to existing files
 - [ ] `src/bot/hooks.ts` exports all functions listed in `botHooks`
+- [ ] `onInteraction` is exported if `"onInteraction"` is in `botHooks`
 - [ ] Bot hooks compile without TypeScript errors
 - [ ] API routes return proper error codes for missing auth
-- [ ] Config fields all have `default` values
-- [ ] Both `en.json` and `de.json` exist and have the same keys
+- [ ] `/api/apps/template/config` returns 403 for moderator, 200 for admin
+- [ ] `/api/apps/template/settings` returns 403 for non-admin
+- [ ] Config fields all have `defaultValue` values
+- [ ] Both `en.json` and `de.json` exist and have identical key structure
 - [ ] All Vue pages use `font-nunito` and CSS variables for colors
 - [ ] App can be sideloaded from GitHub URL without errors
 - [ ] Navigation appears correctly in rail and panel
+- [ ] Plain `user` role: rail item visible, **no panel** → direct navigation
+- [ ] Moderator role: panel shows App + Moderation items
+- [ ] Admin role: panel shows all 3 items; admin page loads without 403
 - [ ] Role restrictions work (try accessing protected pages with lower role)
+- [ ] Locale switches between EN/DE on all 3 pages

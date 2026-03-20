@@ -1,26 +1,70 @@
 {
-  "title": "My App",
-  "subtitle": "A short description of what your app does.",
-  "leaderboard": "Leaderboard",
-  "leaderboardSubtitle": "Top members by points earned.",
-  "leaderboardPrivate": "The leaderboard is currently private.",
-  "yourPoints": "Your Points",
-  "rank": "Rank",
-  "member": "Member",
-  "points": "Points",
-  "you": "you",
-  "viewAll": "View all",
-  "back": "Back",
-  "noData": "No data yet. Start talking in voice channels!",
-  "loading": "Loading…",
-  "awardPoints": "Award Points",
-  "award": "Award",
-  "awarding": "Awarding…",
-  "awardSuccess": "Awarded {amount} points to {username}.",
-  "memberIdPlaceholder": "Member ID",
-  "amountPlaceholder": "Amount",
+  "nav": {
+    "app": "App",
+    "mod": "Moderation",
+    "admin": "Admin"
+  },
+  "app": {
+    "title": "Template App",
+    "subtitle": "A community overview powered by the Guildora app template.",
+    "welcome": "Welcome back, {username}!",
+    "overview": {
+      "heading": "Community Overview",
+      "membersTracked": "Members Tracked",
+      "appActive": "App Status",
+      "active": "Active",
+      "noData": "No data yet. The app will populate as members interact."
+    }
+  },
+  "mod": {
+    "title": "Moderation",
+    "subtitle": "Send announcements and review recent moderation actions.",
+    "announce": {
+      "heading": "Send Announcement",
+      "messagePlaceholder": "Write your announcement…",
+      "submit": "Send",
+      "submitting": "Sending…",
+      "success": "Announcement sent to the configured channel.",
+      "noChannel": "No announcement channel configured. Set one in Admin → App Settings."
+    },
+    "log": {
+      "heading": "Recent Actions",
+      "empty": "No actions recorded this session.",
+      "announced": "Sent announcement: \"{message}\""
+    }
+  },
+  "admin": {
+    "title": "Admin",
+    "subtitle": "View app configuration and aggregate statistics.",
+    "config": {
+      "heading": "Current Configuration",
+      "welcomeEnabled": "Welcome Messages",
+      "welcomeMessage": "Welcome Message",
+      "announcementChannelId": "Announcement Channel ID",
+      "notSet": "Not configured"
+    },
+    "settings": {
+      "heading": "App Statistics",
+      "version": "App Version",
+      "totalMembers": "Members Tracked"
+    }
+  },
+  "bot": {
+    "command": {
+      "template": {
+        "response": "The Template app is active on this server. Use it to explore all Guildora integration patterns.",
+        "notActive": "The Template app is installed but not yet configured."
+      }
+    }
+  },
   "error": {
-    "load": "Failed to load data. Please try again.",
-    "award": "Failed to award points. Please try again."
-  }
+    "load": "Failed to load data. Please refresh the page.",
+    "announce": "Failed to send announcement: {message}",
+    "settings": "Failed to load settings. Please refresh the page.",
+    "forbidden": "You do not have permission to view this page."
+  },
+  "loading": "Loading…",
+  "back": "Back",
+  "save": "Save",
+  "cancel": "Cancel"
 }
