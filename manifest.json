@@ -9,7 +9,7 @@
   "compatibility": { "core": { "minVersion": "0.1.0" } },
   "navigation": {
     "rail": [
-      { "id": "guildora-app-template", "icon": "puzzle-piece", "label": "Template",
+      { "id": "guildora-app-template", "icon": "proicons:apps", "label": "Template",
         "to": "/apps/guildora-app-template", "order": 50, "requiredRoles": ["user"] }
     ],
     "panelGroups": [{
@@ -38,6 +38,14 @@
     { "method": "GET",  "path": "/api/apps/guildora-app-template/settings",  "handler": "src/api/settings.get.ts",  "requiredRoles": ["admin"] }
   ],
   "botHooks": ["onVoiceActivity", "onRoleChange", "onMemberJoin", "onInteraction"],
+  "botCommands": [
+    {
+      "name": "template",
+      "description": "Show the Template app status on this server.",
+      "nameLocalizations": { "de": "template" },
+      "descriptionLocalizations": { "de": "Zeigt den Status der Template-App auf diesem Server." }
+    }
+  ],
   "configFields": [
     {
       "key": "welcomeEnabled",

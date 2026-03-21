@@ -95,25 +95,20 @@ async function sendAnnouncement() {
   noChannel.value = false
 
   try {
-    const { data, error } = await useFetch('/api/apps/guildora-app-template/announce', {
+    await $fetch('/api/apps/guildora-app-template/announce', {
       method: 'POST',
       body: { message: message.value.trim() }
     })
-
-    if (error.value) {
-      const status = error.value?.statusCode
-      if (status === 422) {
-        noChannel.value = true
-      } else {
-        errorMessage.value = t('error.announce', { message: error.value.message ?? String(status) })
-      }
-    } else {
-      successMessage.value = t('mod.announce.success')
-      actionLog.value.unshift(message.value.trim())
-      message.value = ''
-    }
+    successMessage.value = t('mod.announce.success')
+    actionLog.value.unshift(message.value.trim())
+    message.value = ''
   } catch (e) {
-    errorMessage.value = t('error.announce', { message: e.message })
+    const status = e?.response?.status
+    if (status === 422) {
+      noChannel.value = true
+    } else {
+      errorMessage.value = t('error.announce', { message: e?.message ?? String(status) })
+    }
   } finally {
     submitting.value = false
   }

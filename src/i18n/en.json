@@ -41,7 +41,9 @@
       "welcomeEnabled": "Welcome Messages",
       "welcomeMessage": "Welcome Message",
       "announcementChannelId": "Announcement Channel ID",
-      "notSet": "Not configured"
+      "notSet": "Not configured",
+      "enabled": "✓ Enabled",
+      "disabled": "✗ Disabled"
     },
     "settings": {
       "heading": "App Statistics",

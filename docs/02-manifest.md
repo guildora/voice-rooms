@@ -68,8 +68,11 @@ The `manifest.json` file at the repo root defines your app. It is fetched by the
 
 ```jsonc
 {
+  "id": "my-group",          // required | unique within the app
   "railItemId": "my-rail",   // must match a rail item id
-  "entries": [
+  "order": 0,                // optional | position (lower = first)
+  "title": "My App",         // optional | section heading
+  "items": [
     {
       "id": "my-page",
       "label": "Page Name",

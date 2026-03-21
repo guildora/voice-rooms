@@ -37,7 +37,7 @@
               {{ t('admin.config.welcomeEnabled') }}
             </dt>
             <dd class="mt-1 font-nunito" style="color: var(--color-text, #111)">
-              {{ config?.welcomeEnabled ? '✓ Enabled' : '✗ Disabled' }}
+              {{ config?.welcomeEnabled ? t('admin.config.enabled') : t('admin.config.disabled') }}
             </dd>
           </div>
           <div>
