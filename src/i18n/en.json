@@ -80,6 +80,21 @@
       "adminNote": "Admins always have access to the Settings page and cannot be removed."
     }
   },
+  "bot": {
+    "renameMenu": {
+      "disabled": "Channel rename is currently disabled.",
+      "notInVoice": "You are not connected to a voice channel.",
+      "notManaged": "Your current voice channel is not managed by this app.",
+      "noFreeIcons": "No free icons are available right now.",
+      "prompt": "Select a new icon for your channel ({token} {name}).",
+      "placeholder": "Select an icon",
+      "invalidIcon": "Please select a valid icon.",
+      "iconOccupied": "This icon is already used by another managed voice channel.",
+      "channelNotManaged": "Your current channel is not managed by this app.",
+      "renameFailed": "Could not rename the channel.",
+      "renameFallback": "Rename failed."
+    }
+  },
   "error": {
     "load": "Failed to load data. Please refresh the page.",
     "settings": "Failed to load settings. Please refresh the page."

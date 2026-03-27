@@ -521,7 +521,7 @@ var(--color-info)            /* #3B82F6 */
 ```
 
 ### Hub CSS classes (safe to use directly)
-The hub's `main.css` provides these classes — use them instead of DaisyUI equivalents:
+The hub's `main.css` provides these classes:
 
 - **Layout/Surface**: `.card`, `.stat`, `.modal-box`
 - **Feedback**: `.alert`, `.alert-info`, `.alert-success`, `.alert-warning`, `.alert-error`
@@ -563,7 +563,6 @@ Tailwind CSS is available. Use utility classes freely. For colors, always use in
 - Import external CSS frameworks (only Tailwind and hub's `main.css` are available)
 - Use hardcoded hex colors (use CSS variables)
 - Add font classes — DM Sans is inherited automatically, no class needed
-- Use DaisyUI compound sub-classes: `card-body`, `card-title`, `stat-title`, `stat-value`, `stats`, `stats-horizontal`, `stats-vertical`, `checkbox checkbox-primary`, `link link-primary` — these are not defined in the hub and will produce unstyled elements
 - Use Tailwind color utilities like `text-primary`, `text-success`, `text-error`, `bg-base-200`, `border-base-300` — use `text-[var(--color-*)]` / `border-[var(--color-line)]` inline instead
 
 ---
@@ -600,11 +599,11 @@ Result:
 
 ### Active state behavior
 
-The hub uses **most-specific-match** logic for panel items. When multiple items could match the current route via prefix (e.g. `/apps/temporary-voice-channels` matches `/apps/temporary-voice-channels/admin`), only the item with the **longest matching path** is shown as active. Sub-page items always take precedence over root items.
+The hub uses **most-specific-match** logic for panel items. When multiple items could match the current route via prefix (e.g. `/apps/voice-rooms` matches `/apps/voice-rooms/admin`), only the item with the **longest matching path** is shown as active. Sub-page items always take precedence over root items.
 
-- On `/apps/temporary-voice-channels` → "Voice Rooms" item is active
-- On `/apps/temporary-voice-channels/settings` → "Einstellungen" item is active (not "Voice Rooms")
-- On `/apps/temporary-voice-channels/admin` → "Zugriffsrechte" item is active (not "Voice Rooms")
+- On `/apps/voice-rooms` → "Voice Rooms" item is active
+- On `/apps/voice-rooms/settings` → "Einstellungen" item is active (not "Voice Rooms")
+- On `/apps/voice-rooms/admin` → "Zugriffsrechte" item is active (not "Voice Rooms")
 
 ---
 
@@ -687,7 +686,7 @@ Before publishing, verify:
 - [ ] `/api/apps/template/settings` returns 403 for non-admin
 - [ ] Config fields all have `defaultValue` values
 - [ ] Both `en.json` and `de.json` exist and have identical key structure
-- [ ] All Vue pages use hub CSS classes (`.card`, `.stat`, `.alert-*`, `.btn-*`) and CSS variables for colors — no DaisyUI compound sub-classes
+- [ ] All Vue pages use hub CSS classes (`.card`, `.stat`, `.alert-*`, `.btn-*`) and CSS variables for colors
 - [ ] App can be sideloaded from GitHub URL without errors
 - [ ] Navigation appears correctly in rail and panel
 - [ ] Plain `user` role: rail item visible, **no panel** → direct navigation

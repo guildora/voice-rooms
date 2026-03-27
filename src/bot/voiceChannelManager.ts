@@ -50,6 +50,7 @@ interface VoiceChannelInfo {
 
 const MANAGED_INDEX_KEY = 'tempvc:managed-index'
 const MANAGED_PREFIX = 'tempvc:managed:'
+const MANAGED_COUNT_KEY = 'tempvc:managed-count'
 
 const pendingTokensByGuild = new Map<string, Set<string>>()
 const interactionRevisionByGuild = new Map<string, number>()
@@ -129,12 +130,17 @@ async function saveManagedIndex(db: AppDb, channelIds: string[]): Promise<void> 
   await db.set(MANAGED_INDEX_KEY, Array.from(new Set(channelIds)))
 }
 
+async function syncManagedCount(db: AppDb, count: number): Promise<void> {
+  await db.set(MANAGED_COUNT_KEY, Math.max(0, count))
+}
+
 async function addManagedChannelToIndex(db: AppDb, channelId: string): Promise<void> {
   const index = await loadManagedIndex(db)
   if (index.includes(channelId)) return
 
   index.push(channelId)
   await saveManagedIndex(db, index)
+  await syncManagedCount(db, index.length)
 }
 
 async function removeManagedChannelFromIndex(db: AppDb, channelId: string): Promise<void> {
@@ -143,6 +149,7 @@ async function removeManagedChannelFromIndex(db: AppDb, channelId: string): Prom
   if (next.length === index.length) return
 
   await saveManagedIndex(db, next)
+  await syncManagedCount(db, next.length)
 }
 
 function normalizeManagedRecord(record: unknown): ManagedChannelRecord | null {
@@ -217,18 +224,20 @@ async function tryCall(target: unknown, methodName: string, ...args: unknown[]):
 }
 
 async function createVoiceChannel(bot: unknown, name: string, parentId: string): Promise<string | null> {
-  const attempts = [
-    () => tryCall(bot, 'createVoiceChannel', name, parentId),
-    () => tryCall(bot, 'createVoiceChannel', { name, parentId }),
-    () => tryCall(bot, 'createChannel', { name, type: 'voice', parentId }),
-    () => tryCall(bot, 'createGuildChannel', { name, type: 'voice', parentId }),
-    () => tryCall(bot, 'createChannel', name, { type: 'voice', parentId })
+  const attempts: Array<{ label: string; fn: () => Promise<unknown> }> = [
+    { label: 'createVoiceChannel(name, parentId)', fn: () => tryCall(bot, 'createVoiceChannel', name, parentId) },
+    { label: 'createVoiceChannel({name, parentId})', fn: () => tryCall(bot, 'createVoiceChannel', { name, parentId }) },
+    { label: 'createChannel({name, type:voice, parentId})', fn: () => tryCall(bot, 'createChannel', { name, type: 'voice', parentId }) },
+    { label: 'createGuildChannel({name, type:voice, parentId})', fn: () => tryCall(bot, 'createGuildChannel', { name, type: 'voice', parentId }) },
+    { label: 'createChannel(name, {type:voice, parentId})', fn: () => tryCall(bot, 'createChannel', name, { type: 'voice', parentId }) }
   ]
 
   for (const attempt of attempts) {
-    const result = await attempt()
+    const result = await attempt.fn()
     const channelId = normalizeChannelId(result)
-    if (channelId) return channelId
+    if (channelId) {
+      return channelId
+    }
   }
 
   return null
@@ -462,7 +471,7 @@ async function resolveManagedState(
     }
   }
 
-  if (!isValidManagedVoiceName(channel.name, knownConfig.defaultChannelName)) {
+  if (!isValidManagedVoiceName(channel.name, knownConfig.defaultChannelName, knownConfig.countingStyle, knownConfig.defaultChannelIcon)) {
     return {
       managed: false,
       token: null,
@@ -473,7 +482,7 @@ async function resolveManagedState(
 
   return {
     managed: true,
-    token: extractToken(channel.name, knownConfig.defaultChannelName),
+    token: extractToken(channel.name, knownConfig.defaultChannelName, knownConfig.countingStyle, knownConfig.defaultChannelIcon),
     ownerId: 'unknown',
     createdAt: new Date().toISOString()
   }
@@ -518,14 +527,15 @@ export async function listManagedChannels(guildId: string, context: VoiceRuntime
   if (stale.length > 0) {
     const cleaned = index.filter((channelId) => !stale.includes(channelId))
     await saveManagedIndex(context.db, cleaned)
+    await syncManagedCount(context.db, cleaned.length)
   }
 
   if (runtimeConfig.temporaryVoiceCategoryId) {
     const channelsInCategory = await listVoiceChannelsByCategory(context.bot, runtimeConfig.temporaryVoiceCategoryId)
     for (const channel of channelsInCategory) {
-      if (!isValidManagedVoiceName(channel.name, runtimeConfig.defaultChannelName)) continue
+      if (!isValidManagedVoiceName(channel.name, runtimeConfig.defaultChannelName, runtimeConfig.countingStyle, runtimeConfig.defaultChannelIcon)) continue
 
-      const token = extractToken(channel.name, runtimeConfig.defaultChannelName)
+      const token = extractToken(channel.name, runtimeConfig.defaultChannelName, runtimeConfig.countingStyle, runtimeConfig.defaultChannelIcon)
       if (!token || byChannelId.has(channel.id)) continue
 
       byChannelId.set(channel.id, {
@@ -562,13 +572,13 @@ export async function ensureChannelForLobbyJoin(
 
     const usedTokens = new Set(managedChannels.map((entry) => entry.token))
     const pendingTokens = getPendingTokens(guildId)
-    const token = getNextAvailableToken(usedTokens, pendingTokens, runtimeConfig.defaultChannelIcon)
+    const token = getNextAvailableToken(usedTokens, pendingTokens, runtimeConfig.countingStyle, runtimeConfig.defaultChannelIcon)
     pendingTokens.add(token)
 
     let channelId: string | null = null
 
     try {
-      const name = buildTemporaryChannelName(token, runtimeConfig.defaultChannelName)
+      const name = buildTemporaryChannelName(token, runtimeConfig.defaultChannelName, runtimeConfig.countingStyle, runtimeConfig.defaultChannelIcon)
       channelId = await createVoiceChannel(context.bot, name, runtimeConfig.temporaryVoiceCategoryId)
 
       if (!channelId) {
@@ -663,7 +673,7 @@ export async function renameManagedChannelToken(
       return { success: false, reason: 'token-occupied' }
     }
 
-    const renamed = await renameVoiceChannel(context.bot, channelId, buildTemporaryChannelName(nextToken, runtimeConfig.defaultChannelName))
+    const renamed = await renameVoiceChannel(context.bot, channelId, buildTemporaryChannelName(nextToken, runtimeConfig.defaultChannelName, runtimeConfig.countingStyle, runtimeConfig.defaultChannelIcon))
     if (!renamed) {
       return { success: false, reason: 'rename-failed' }
     }

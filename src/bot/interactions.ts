@@ -1,5 +1,6 @@
 import type { BotContext, InteractionPayload } from '@guildora/app-sdk'
 import { loadTempVoiceConfig } from './configLoader'
+import { botMessages } from './botMessages'
 import {
   getInteractionRevision,
   getMemberCurrentVoiceChannelId,
@@ -124,7 +125,7 @@ function buildRenameSelectComponent(customId: string, options: Array<{ label: st
   return {
     type: 'string_select',
     customId,
-    placeholder: 'Select an icon',
+    placeholder: botMessages.placeholder,
     minValues: 1,
     maxValues: 1,
     options
@@ -158,13 +159,13 @@ function nextAvailableTokens(usedByOtherChannels: Set<string>, currentToken: str
 }
 
 function renameFailureMessage(reason: string): string {
-  if (reason === 'token-occupied') return 'This icon is already used by another managed voice channel.'
-  if (reason === 'not-managed') return 'Your current channel is not managed by this app.'
-  if (reason === 'rename-disabled') return 'Channel rename is disabled in app settings.'
-  if (reason === 'invalid-token') return 'Invalid icon selected.'
-  if (reason === 'rename-failed') return 'Could not rename the channel.'
+  if (reason === 'token-occupied') return botMessages.iconOccupied
+  if (reason === 'not-managed') return botMessages.channelNotManaged
+  if (reason === 'rename-disabled') return botMessages.renameDisabled
+  if (reason === 'invalid-token') return botMessages.invalidIcon
+  if (reason === 'rename-failed') return botMessages.renameFailed
 
-  return 'Rename failed.'
+  return botMessages.fallback
 }
 
 async function openRenameMenu(payload: InteractionPayload, ctx: BotContext, preferUpdate = false): Promise<void> {
@@ -172,7 +173,7 @@ async function openRenameMenu(payload: InteractionPayload, ctx: BotContext, pref
 
   if (!config.enabled || !config.renameEnabled) {
     await sendInteractionResponse(payload, ctx.bot, {
-      content: 'Channel rename is currently disabled.',
+      content: botMessages.renameDisabled,
       ephemeral: true
     }, preferUpdate)
     return
@@ -181,7 +182,7 @@ async function openRenameMenu(payload: InteractionPayload, ctx: BotContext, pref
   const memberChannelId = await getMemberCurrentVoiceChannelId(ctx.bot, payload.memberId)
   if (!memberChannelId) {
     await sendInteractionResponse(payload, ctx.bot, {
-      content: 'You are not connected to a voice channel.',
+      content: botMessages.notInVoice,
       ephemeral: true
     }, preferUpdate)
     return
@@ -191,7 +192,7 @@ async function openRenameMenu(payload: InteractionPayload, ctx: BotContext, pref
   const targetChannel = managedChannels.find((entry) => entry.channelId === memberChannelId)
   if (!targetChannel) {
     await sendInteractionResponse(payload, ctx.bot, {
-      content: 'Your current voice channel is not managed by this app.',
+      content: botMessages.notManaged,
       ephemeral: true
     }, preferUpdate)
     return
@@ -208,7 +209,7 @@ async function openRenameMenu(payload: InteractionPayload, ctx: BotContext, pref
 
   if (options.length === 0) {
     await sendInteractionResponse(payload, ctx.bot, {
-      content: 'No free icons are available right now.',
+      content: botMessages.noFreeIcons,
       ephemeral: true
     }, preferUpdate)
     return
@@ -218,7 +219,7 @@ async function openRenameMenu(payload: InteractionPayload, ctx: BotContext, pref
   const customId = `${RENAME_SELECT_PREFIX}${targetChannel.channelId}:${revision}`
 
   await sendInteractionResponse(payload, ctx.bot, {
-    content: `Select a new icon for your channel (${targetChannel.token} ${config.defaultChannelName}).`,
+    content: botMessages.prompt(targetChannel.token, config.defaultChannelName),
     ephemeral: true,
     components: [buildRenameSelectComponent(customId, options)]
   }, preferUpdate)
@@ -233,7 +234,7 @@ async function handleRenameSelection(payload: InteractionPayload, ctx: BotContex
 
   if (!token) {
     await sendInteractionResponse(payload, ctx.bot, {
-      content: 'Please select a valid icon.',
+      content: botMessages.invalidIcon,
       ephemeral: true
     }, true)
     return

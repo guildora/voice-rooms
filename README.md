@@ -1,6 +1,6 @@
-# Temporary Voice Channels
+# Voice Rooms
 
-Guildora app for managed temporary voice channels.
+Guildora app for managed temporary voice rooms.
 
 When a user joins a configured lobby channel, the bot creates a temporary voice room in a configured category, moves the user, and cleans up empty managed channels automatically.
 
@@ -32,10 +32,10 @@ Configure these fields in App Settings:
 
 ## API Routes
 
-- `GET /api/apps/temporary-voice-channels/overview`
-- `GET /api/apps/temporary-voice-channels/config`
-- `GET /api/apps/temporary-voice-channels/settings`
-- `POST /api/apps/temporary-voice-channels/announce`
+- `GET /api/apps/voice-rooms/overview`
+- `GET /api/apps/voice-rooms/config`
+- `GET /api/apps/voice-rooms/settings`
+- `POST /api/apps/voice-rooms/announce`
 
 ## Development
 
@@ -47,7 +47,7 @@ Configure these fields in App Settings:
 ## Project Structure
 
 ```text
-temporary-voice-channels/
+voice-rooms/
 ├── manifest.json
 ├── README.md
 ├── AGENTS.md

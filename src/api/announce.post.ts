@@ -1,4 +1,4 @@
-// POST /api/apps/temporary-voice-channels/announce
+// POST /api/apps/voice-rooms/announce
 // Sends an announcement to the configured channel. Restricted to moderators.
 // Access: requiredRoles: ["moderator"] (enforced by host before this runs)
 //

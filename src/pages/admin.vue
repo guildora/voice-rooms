@@ -66,7 +66,7 @@ import { useI18n, useFetch, $fetch } from '@guildora/hub'
 
 const { t } = useI18n()
 
-const { data: config, pending: pendingConfig } = await useFetch('/api/apps/temporary-voice-channels/config')
+const { data: config, pending: pendingConfig } = await useFetch('/api/apps/voice-rooms/config')
 
 const availableRoles = computed(() => [
   { value: 'user', label: t('admin.roles.user'), description: t('admin.roles.userDesc') },
@@ -83,8 +83,8 @@ const currentOverrides = computed(() => {
 })
 
 const selectedRoles = ref(
-  Array.isArray(currentOverrides.value['temporary-voice-channels-settings'])
-    ? [...currentOverrides.value['temporary-voice-channels-settings']]
+  Array.isArray(currentOverrides.value['voice-rooms-settings'])
+    ? [...currentOverrides.value['voice-rooms-settings']]
     : ['moderator', 'admin']
 )
 
@@ -104,13 +104,13 @@ async function save() {
   saveError.value = false
   const roles = ensureAdmin(selectedRoles.value)
   try {
-    await $fetch('/api/apps/temporary-voice-channels/config', {
+    await $fetch('/api/apps/voice-rooms/config', {
       method: 'PUT',
       body: {
         ...(config.value ?? {}),
         __roleOverrides: {
           ...currentOverrides.value,
-          'temporary-voice-channels-settings': roles
+          'voice-rooms-settings': roles
         }
       }
     })

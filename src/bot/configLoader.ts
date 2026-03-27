@@ -4,6 +4,7 @@ export interface TempVoiceConfig {
   temporaryVoiceCategoryId: string
   defaultChannelIcon: string
   defaultChannelName: string
+  countingStyle: 'numeric' | 'emoji'
   maxManagedChannels: number
   renameEnabled: boolean
   activityTrackingEnabled: boolean
@@ -30,12 +31,16 @@ function asPositiveInteger(value: unknown, fallback: number): number {
 export function loadTempVoiceConfig(rawConfig: Record<string, unknown> | undefined): TempVoiceConfig {
   const config = rawConfig ?? {}
 
+  const countingRaw = asString(config.countingStyle, 'numeric')
+  const countingStyle = countingRaw === 'emoji' ? 'emoji' : 'numeric'
+
   return {
     enabled: asBoolean(config.enabled, true),
     lobbyChannelId: asString(config.lobbyChannelId),
     temporaryVoiceCategoryId: asString(config.temporaryVoiceCategoryId),
     defaultChannelIcon: asString(config.defaultChannelIcon, DEFAULT_CHANNEL_ICON) || DEFAULT_CHANNEL_ICON,
     defaultChannelName: asString(config.defaultChannelName, DEFAULT_CHANNEL_NAME) || DEFAULT_CHANNEL_NAME,
+    countingStyle,
     maxManagedChannels: asPositiveInteger(config.maxManagedChannels, DEFAULT_MAX_MANAGED_CHANNELS),
     renameEnabled: asBoolean(config.renameEnabled, true),
     activityTrackingEnabled: asBoolean(config.activityTrackingEnabled, true)

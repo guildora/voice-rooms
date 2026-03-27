@@ -80,6 +80,21 @@
       "adminNote": "Admins haben immer Zugriff auf die Einstellungsseite und können nicht entfernt werden."
     }
   },
+  "bot": {
+    "renameMenu": {
+      "disabled": "Die Kanal-Umbenennung ist derzeit deaktiviert.",
+      "notInVoice": "Du bist mit keinem Voice-Kanal verbunden.",
+      "notManaged": "Dein aktueller Voice-Kanal wird von dieser App nicht verwaltet.",
+      "noFreeIcons": "Derzeit sind keine freien Icons verfügbar.",
+      "prompt": "Wähle ein neues Icon für deinen Kanal ({token} {name}).",
+      "placeholder": "Icon auswählen",
+      "invalidIcon": "Bitte wähle ein gültiges Icon aus.",
+      "iconOccupied": "Dieses Icon wird bereits von einem anderen verwalteten Voice-Kanal verwendet.",
+      "channelNotManaged": "Dein aktueller Kanal wird von dieser App nicht verwaltet.",
+      "renameFailed": "Der Kanal konnte nicht umbenannt werden.",
+      "renameFallback": "Umbenennung fehlgeschlagen."
+    }
+  },
   "error": {
     "load": "Daten konnten nicht geladen werden. Bitte Seite neu laden.",
     "settings": "Einstellungen konnten nicht geladen werden. Bitte Seite neu laden."

@@ -20,24 +20,27 @@ export async function handleTemporaryVoiceLifecycle(payload: VoiceActivityPayloa
   if (!config.lobbyChannelId || !config.temporaryVoiceCategoryId) return
 
   if (payload.action === 'join' && payload.channelId === config.lobbyChannelId) {
-    await ensureChannelForLobbyJoin(payload.memberId, ctx.guildId, ctx)
+    await ensureChannelForLobbyJoin(payload.memberId, payload.guildId, ctx)
     return
   }
 
   if (payload.action === 'move') {
     if (payload.previousChannelId) {
-      await cleanupIfManagedAndEmpty(payload.previousChannelId, ctx.guildId, ctx)
+      await cleanupIfManagedAndEmpty(payload.previousChannelId, payload.guildId, ctx)
     }
 
     if (payload.channelId === config.lobbyChannelId) {
-      await ensureChannelForLobbyJoin(payload.memberId, ctx.guildId, ctx)
+      await ensureChannelForLobbyJoin(payload.memberId, payload.guildId, ctx)
     }
 
     return
   }
 
   if (payload.action === 'leave') {
-    await cleanupIfManagedAndEmpty(payload.channelId, ctx.guildId, ctx)
+    const leftChannelId = payload.previousChannelId ?? payload.channelId
+    if (leftChannelId) {
+      await cleanupIfManagedAndEmpty(leftChannelId, payload.guildId, ctx)
+    }
   }
 }
 

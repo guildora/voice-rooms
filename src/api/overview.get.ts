@@ -1,6 +1,6 @@
 import { loadTempVoiceConfig } from '../bot/configLoader'
 
-// GET /api/apps/temporary-voice-channels/overview
+// GET /api/apps/voice-rooms/overview
 // Returns app-level runtime state for user-facing pages.
 
 export default defineEventHandler(async (event) => {

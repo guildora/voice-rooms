@@ -80,7 +80,7 @@ async function sendAnnouncement() {
   noChannel.value = false
 
   try {
-    await $fetch('/api/apps/temporary-voice-channels/announce', {
+    await $fetch('/api/apps/voice-rooms/announce', {
       method: 'POST',
       body: { message: message.value.trim() }
     })

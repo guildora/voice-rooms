@@ -1,44 +1,44 @@
 {
-  "id": "temporary-voice-channels",
-  "name": "Temporary Voice Channels",
+  "id": "voice-rooms",
+  "name": "Voice Rooms",
   "version": "1.0.0",
   "author": "your-github-username",
   "description": "Creates managed temporary voice channels with icon-based naming, auto cleanup, and hub-managed runtime configuration.",
-  "repositoryUrl": "https://github.com/your-github-username/temporary-voice-channels",
+  "repositoryUrl": "https://github.com/guildora/voice-rooms",
   "license": "MIT",
   "compatibility": { "core": { "minVersion": "0.1.0" } },
   "navigation": {
     "rail": [
       {
-        "id": "temporary-voice-channels",
+        "id": "voice-rooms",
         "icon": "chat",
         "label": "Voice Rooms",
-        "to": "/apps/temporary-voice-channels",
+        "to": "/apps/voice-rooms",
         "order": 50,
         "requiredRoles": ["user"]
       }
     ],
     "panelGroups": [
       {
-        "id": "temporary-voice-channels-group",
-        "railItemId": "temporary-voice-channels",
+        "id": "voice-rooms-group",
+        "railItemId": "voice-rooms",
         "items": [
           {
-            "id": "temporary-voice-channels-app",
+            "id": "voice-rooms-app",
             "label": "Voice Rooms",
-            "to": "/apps/temporary-voice-channels",
+            "to": "/apps/voice-rooms",
             "requiredRoles": ["user"]
           },
           {
-            "id": "temporary-voice-channels-settings",
-            "label": "Einstellungen",
-            "to": "/apps/temporary-voice-channels/settings",
+            "id": "voice-rooms-settings",
+            "label": "Settings",
+            "to": "/apps/voice-rooms/settings",
             "requiredRoles": ["moderator"]
           },
           {
-            "id": "temporary-voice-channels-admin",
-            "label": "Zugriffsrechte",
-            "to": "/apps/temporary-voice-channels/admin",
+            "id": "voice-rooms-admin",
+            "label": "Access Rights",
+            "to": "/apps/voice-rooms/admin",
             "requiredRoles": ["admin"]
           }
         ]
@@ -67,22 +67,22 @@
   ],
   "pages": [
     {
-      "id": "temporary-voice-channels-app",
-      "path": "/apps/temporary-voice-channels",
+      "id": "voice-rooms-app",
+      "path": "/apps/voice-rooms",
       "title": "Voice Rooms",
       "requiredRoles": ["user"],
       "component": "src/pages/index.vue"
     },
     {
-      "id": "temporary-voice-channels-settings",
-      "path": "/apps/temporary-voice-channels/settings",
+      "id": "voice-rooms-settings",
+      "path": "/apps/voice-rooms/settings",
       "title": "Einstellungen",
       "requiredRoles": ["moderator"],
       "component": "src/pages/settings.vue"
     },
     {
-      "id": "temporary-voice-channels-admin",
-      "path": "/apps/temporary-voice-channels/admin",
+      "id": "voice-rooms-admin",
+      "path": "/apps/voice-rooms/admin",
       "title": "Zugriffsrechte",
       "requiredRoles": ["admin"],
       "component": "src/pages/admin.vue"
@@ -91,31 +91,31 @@
   "apiRoutes": [
     {
       "method": "GET",
-      "path": "/api/apps/temporary-voice-channels/overview",
+      "path": "/api/apps/voice-rooms/overview",
       "handler": "src/api/overview.get.ts",
       "requiredRoles": ["user"]
     },
     {
       "method": "GET",
-      "path": "/api/apps/temporary-voice-channels/config",
+      "path": "/api/apps/voice-rooms/config",
       "handler": "src/api/config.get.ts",
       "requiredRoles": ["moderator"]
     },
     {
       "method": "PUT",
-      "path": "/api/apps/temporary-voice-channels/config",
+      "path": "/api/apps/voice-rooms/config",
       "handler": "src/api/config.put.ts",
       "requiredRoles": ["moderator"]
     },
     {
       "method": "GET",
-      "path": "/api/apps/temporary-voice-channels/settings",
+      "path": "/api/apps/voice-rooms/settings",
       "handler": "src/api/settings.get.ts",
       "requiredRoles": ["moderator"]
     },
     {
       "method": "POST",
-      "path": "/api/apps/temporary-voice-channels/announce",
+      "path": "/api/apps/voice-rooms/announce",
       "handler": "src/api/announce.post.ts",
       "requiredRoles": ["moderator"]
     }

@@ -1,6 +1,6 @@
 import { loadTempVoiceConfig } from '../bot/configLoader'
 
-// GET /api/apps/temporary-voice-channels/config
+// GET /api/apps/voice-rooms/config
 // Returns normalized app config values. Accessible to moderators and above.
 
 export default defineEventHandler(async (event) => {

@@ -1,4 +1,4 @@
-// PUT /api/apps/temporary-voice-channels/config
+// PUT /api/apps/voice-rooms/config
 // Saves updated app config. Accessible to moderators and above.
 
 export default defineEventHandler(async (event) => {

@@ -28,22 +28,19 @@
       <!-- Configuration form -->
       <div class="card">
         <div class="p-6">
-          <h2 class="mb-4 text-base font-semibold text-[var(--color-text-primary)]">{{ t('settings.config.heading') }}</h2>
-
-          <div class="mt-4 flex flex-col gap-6">
+          <div class="flex flex-col gap-4">
             <!-- enabled -->
             <div class="flex items-center justify-between gap-4">
-              <div>
-                <p class="font-semibold text-sm">{{ t('settings.config.enabled') }}</p>
-                <p class="text-xs opacity-60">{{ t('settings.config.enabledDesc') }}</p>
-              </div>
+              <p class="font-semibold text-sm" :title="t('settings.config.enabledDesc')">{{ t('settings.config.enabled') }}</p>
               <input type="checkbox" v-model="form.enabled" class="w-4 h-4" style="accent-color: var(--color-accent);" />
             </div>
 
             <!-- lobbyChannelId -->
             <div>
-              <label class="field__label">{{ t('settings.config.lobbyChannelId') }}</label>
-              <p class="mt-1 mb-2 text-xs opacity-60">{{ t('settings.config.lobbyChannelIdDesc') }}</p>
+              <label class="field__label">
+                {{ t('settings.config.lobbyChannelId') }}
+                <span class="ml-1 cursor-help opacity-40 hover:opacity-70" :title="t('settings.config.lobbyChannelIdDesc')">ⓘ</span>
+              </label>
               <input
                 v-model="form.lobbyChannelId"
                 type="text"
@@ -54,8 +51,10 @@
 
             <!-- temporaryVoiceCategoryId -->
             <div>
-              <label class="field__label">{{ t('settings.config.categoryId') }}</label>
-              <p class="mt-1 mb-2 text-xs opacity-60">{{ t('settings.config.categoryIdDesc') }}</p>
+              <label class="field__label">
+                {{ t('settings.config.categoryId') }}
+                <span class="ml-1 cursor-help opacity-40 hover:opacity-70" :title="t('settings.config.categoryIdDesc')">ⓘ</span>
+              </label>
               <input
                 v-model="form.temporaryVoiceCategoryId"
                 type="text"
@@ -66,8 +65,10 @@
 
             <!-- defaultChannelIcon -->
             <div>
-              <label class="field__label">{{ t('settings.config.channelIcon') }}</label>
-              <p class="mt-1 mb-2 text-xs opacity-60">{{ t('settings.config.channelIconDesc') }}</p>
+              <label class="field__label">
+                {{ t('settings.config.channelIcon') }}
+                <span class="ml-1 cursor-help opacity-40 hover:opacity-70" :title="t('settings.config.channelIconDesc')">ⓘ</span>
+              </label>
               <input
                 v-model="form.defaultChannelIcon"
                 type="text"
@@ -77,8 +78,10 @@
 
             <!-- defaultChannelName -->
             <div>
-              <label class="field__label">{{ t('settings.config.channelName') }}</label>
-              <p class="mt-1 mb-2 text-xs opacity-60">{{ t('settings.config.channelNameDesc') }}</p>
+              <label class="field__label">
+                {{ t('settings.config.channelName') }}
+                <span class="ml-1 cursor-help opacity-40 hover:opacity-70" :title="t('settings.config.channelNameDesc')">ⓘ</span>
+              </label>
               <input
                 v-model="form.defaultChannelName"
                 type="text"
@@ -88,8 +91,10 @@
 
             <!-- countingStyle -->
             <div>
-              <label class="field__label">{{ t('settings.config.countingStyle') }}</label>
-              <p class="mt-1 mb-2 text-xs opacity-60">{{ t('settings.config.countingStyleDesc') }}</p>
+              <label class="field__label">
+                {{ t('settings.config.countingStyle') }}
+                <span class="ml-1 cursor-help opacity-40 hover:opacity-70" :title="t('settings.config.countingStyleDesc')">ⓘ</span>
+              </label>
               <select v-model="form.countingStyle" class="select w-full sm:w-56">
                 <option value="numeric">{{ t('settings.config.countingNumeric') }}</option>
                 <option value="emoji">{{ t('settings.config.countingEmoji') }}</option>
@@ -97,7 +102,7 @@
             </div>
 
             <!-- maxManagedChannels -->
-            <div class="field">
+            <div>
               <label class="field__label">{{ t('settings.config.maxChannels') }}</label>
               <input
                 v-model.number="form.maxManagedChannels"
@@ -110,19 +115,13 @@
 
             <!-- renameEnabled -->
             <div class="flex items-center justify-between gap-4">
-              <div>
-                <p class="font-semibold text-sm">{{ t('settings.config.renameEnabled') }}</p>
-                <p class="text-xs opacity-60">{{ t('settings.config.renameEnabledDesc') }}</p>
-              </div>
+              <p class="font-semibold text-sm" :title="t('settings.config.renameEnabledDesc')">{{ t('settings.config.renameEnabled') }}</p>
               <input type="checkbox" v-model="form.renameEnabled" class="w-4 h-4" style="accent-color: var(--color-accent);" />
             </div>
 
             <!-- activityTrackingEnabled -->
             <div class="flex items-center justify-between gap-4">
-              <div>
-                <p class="font-semibold text-sm">{{ t('settings.config.activityTracking') }}</p>
-                <p class="text-xs opacity-60">{{ t('settings.config.activityTrackingDesc') }}</p>
-              </div>
+              <p class="font-semibold text-sm" :title="t('settings.config.activityTrackingDesc')">{{ t('settings.config.activityTracking') }}</p>
               <input type="checkbox" v-model="form.activityTrackingEnabled" class="w-4 h-4" style="accent-color: var(--color-accent);" />
             </div>
           </div>
@@ -166,8 +165,8 @@ import { useI18n, useFetch, $fetch } from '@guildora/hub'
 
 const { t } = useI18n()
 
-const { data: config, pending: pendingConfig, error: configError } = await useFetch('/api/apps/temporary-voice-channels/config')
-const { data: stats, pending: pendingStats, error: statsError } = await useFetch('/api/apps/temporary-voice-channels/settings')
+const { data: config, pending: pendingConfig, error: configError } = await useFetch('/api/apps/voice-rooms/config')
+const { data: stats, pending: pendingStats, error: statsError } = await useFetch('/api/apps/voice-rooms/settings')
 
 const form = ref({
   enabled: config.value?.enabled ?? true,
@@ -195,7 +194,7 @@ async function save() {
   saveSuccess.value = false
   saveError.value = false
   try {
-    await $fetch('/api/apps/temporary-voice-channels/config', {
+    await $fetch('/api/apps/voice-rooms/config', {
       method: 'PUT',
       body: {
         ...form.value,

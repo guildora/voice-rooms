@@ -1,11 +1,10 @@
-// GET /api/apps/temporary-voice-channels/settings
+// GET /api/apps/voice-rooms/settings
 // Returns aggregate app statistics. Restricted to admins.
 
 export default defineEventHandler(async (event) => {
   const { db } = event.context.guildora
 
-  const managedIndex = await db.get('tempvc:managed-index')
-  const managedChannels = Array.isArray(managedIndex) ? managedIndex.length : 0
+  const managedChannels = await db.get('tempvc:managed-count')
 
   const trackedTotals = await db.list('tempvc:activity:total:')
   const totalTrackedSeconds = trackedTotals.reduce((sum, entry) => {
@@ -15,9 +14,8 @@ export default defineEventHandler(async (event) => {
 
   return {
     version: '1.0.0',
-    // Backward-compatible alias for the starter admin page.
     totalMembers: trackedTotals.length,
-    managedChannels,
+    managedChannels: typeof managedChannels === 'number' ? managedChannels : 0,
     trackedMembers: trackedTotals.length,
     totalTrackedSeconds
   }
