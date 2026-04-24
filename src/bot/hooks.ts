@@ -9,11 +9,19 @@ import { handleTemporaryVoiceLifecycle } from './events'
 import { handleTemporaryVoiceInteractions } from './interactions'
 
 export async function onVoiceActivity(payload: VoiceActivityPayload, ctx: BotContext): Promise<void> {
-  await handleTemporaryVoiceLifecycle(payload, ctx)
+  try {
+    await handleTemporaryVoiceLifecycle(payload, ctx)
+  } catch (err) {
+    console.error('[voice-rooms] onVoiceActivity error:', err)
+  }
 }
 
 export async function onInteraction(payload: InteractionPayload, ctx: BotContext): Promise<void> {
-  await handleTemporaryVoiceInteractions(payload, ctx)
+  try {
+    await handleTemporaryVoiceInteractions(payload, ctx)
+  } catch (err) {
+    console.error('[voice-rooms] onInteraction error:', err)
+  }
 }
 
 export async function onRoleChange(_payload: RoleChangePayload, _ctx: BotContext): Promise<void> {
