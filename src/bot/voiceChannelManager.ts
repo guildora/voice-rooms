@@ -51,7 +51,6 @@ interface VoiceChannelInfo {
 
 const MANAGED_INDEX_KEY = 'tempvc:managed-index'
 const MANAGED_PREFIX = 'tempvc:managed:'
-const MANAGED_COUNT_KEY = 'tempvc:managed-count'
 
 const pendingTokensByGuild = new Map<string, Set<string>>()
 const interactionRevisionByGuild = new TTLMap<string, number>()
@@ -206,17 +205,12 @@ async function saveManagedIndex(db: AppDb, channelIds: string[]): Promise<void> 
   await db.set(MANAGED_INDEX_KEY, Array.from(new Set(channelIds)))
 }
 
-async function syncManagedCount(db: AppDb, count: number): Promise<void> {
-  await db.set(MANAGED_COUNT_KEY, Math.max(0, count))
-}
-
 async function addManagedChannelToIndex(db: AppDb, channelId: string): Promise<void> {
   const index = await loadManagedIndex(db)
   if (index.includes(channelId)) return
 
   index.push(channelId)
   await saveManagedIndex(db, index)
-  await syncManagedCount(db, index.length)
 }
 
 async function removeManagedChannelFromIndex(db: AppDb, channelId: string): Promise<void> {
@@ -225,7 +219,6 @@ async function removeManagedChannelFromIndex(db: AppDb, channelId: string): Prom
   if (next.length === index.length) return
 
   await saveManagedIndex(db, next)
-  await syncManagedCount(db, next.length)
 }
 
 function normalizeManagedRecord(record: unknown): ManagedChannelRecord | null {
@@ -603,7 +596,6 @@ export async function listManagedChannels(guildId: string, context: VoiceRuntime
   if (stale.length > 0) {
     const cleaned = index.filter((channelId) => !stale.includes(channelId))
     await saveManagedIndex(context.db, cleaned)
-    await syncManagedCount(context.db, cleaned.length)
   }
 
   if (runtimeConfig.temporaryVoiceCategoryId) {
