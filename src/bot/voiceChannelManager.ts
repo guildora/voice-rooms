@@ -1,4 +1,5 @@
 import { loadTempVoiceConfig } from './configLoader'
+import { TTLMap } from './ttlMap'
 import { buildTemporaryChannelName, extractToken, getNextAvailableToken, isValidManagedVoiceName } from './voiceChannelTokens'
 
 interface AppDb {
@@ -53,15 +54,88 @@ const MANAGED_PREFIX = 'tempvc:managed:'
 const MANAGED_COUNT_KEY = 'tempvc:managed-count'
 
 const pendingTokensByGuild = new Map<string, Set<string>>()
-const interactionRevisionByGuild = new Map<string, number>()
+const interactionRevisionByGuild = new TTLMap<string, number>()
 const guildLockBusy = new Map<string, boolean>()
 const guildLockQueues = new Map<string, Array<() => void>>()
+const lastGuildActivity = new Map<string, number>()
+
+/** Record that a guild is active (called on every meaningful operation). */
+function touchGuildActivity(guildId: string): void {
+  lastGuildActivity.set(guildId, Date.now())
+}
+
+/** Sweep stale entries from all in-memory maps for guilds inactive > maxAgeMs. */
+function sweepStaleGuilds(maxAgeMs: number): void {
+  const now = Date.now()
+  let evicted = 0
+
+  for (const [guildId, lastActivity] of lastGuildActivity) {
+    if (now - lastActivity <= maxAgeMs) continue
+
+    // Safe to remove pending tokens — stale means a crashed creation
+    pendingTokensByGuild.delete(guildId)
+
+    // Safe to remove revision — just resets the counter
+    interactionRevisionByGuild.delete(guildId)
+
+    // Only remove lock state if NOT currently held
+    if (guildLockBusy.get(guildId) !== true) {
+      guildLockBusy.delete(guildId)
+    }
+
+    // Only remove queue if empty or undefined
+    const queue = guildLockQueues.get(guildId)
+    if (!queue || queue.length === 0) {
+      guildLockQueues.delete(guildId)
+    }
+
+    // Remove activity tracker itself
+    lastGuildActivity.delete(guildId)
+    evicted++
+  }
+
+  if (evicted > 0) {
+    console.debug(`[voice-rooms] Guild sweep: evicted ${evicted} inactive guild${evicted === 1 ? '' : 's'}`)
+  }
+}
+
+let mapSweepTimer: ReturnType<typeof setInterval> | null = null
+
+/**
+ * Start the periodic guild-map sweep. Call once at module load or bot startup.
+ * Uses .unref() so the timer does NOT prevent Node.js process exit.
+ */
+export function startMapSweep(intervalMs = 300_000, maxAgeMs = 1_800_000): void {
+  stopMapSweep()
+  mapSweepTimer = setInterval(() => {
+    try {
+      sweepStaleGuilds(maxAgeMs)
+      // Also let TTLMap run its own sweep for interactionRevisionByGuild
+      interactionRevisionByGuild.sweepOnce(maxAgeMs)
+    } catch (err) {
+      console.error('[voice-rooms] Guild map sweep error:', err)
+    }
+  }, intervalMs)
+
+  if (mapSweepTimer && typeof mapSweepTimer === 'object' && 'unref' in mapSweepTimer) {
+    mapSweepTimer.unref()
+  }
+}
+
+/** Stop the periodic guild-map sweep. */
+export function stopMapSweep(): void {
+  if (mapSweepTimer !== null) {
+    clearInterval(mapSweepTimer)
+    mapSweepTimer = null
+  }
+}
 
 function managedChannelKey(channelId: string): string {
   return `${MANAGED_PREFIX}${channelId}`
 }
 
 async function acquireGuildLock(guildId: string): Promise<void> {
+  touchGuildActivity(guildId)
   if (!guildLockBusy.get(guildId)) {
     guildLockBusy.set(guildId, true)
     return
@@ -110,12 +184,14 @@ function getPendingTokens(guildId: string): Set<string> {
 }
 
 function bumpInteractionRevision(guildId: string): number {
+  touchGuildActivity(guildId)
   const next = (interactionRevisionByGuild.get(guildId) ?? 0) + 1
   interactionRevisionByGuild.set(guildId, next)
   return next
 }
 
 export function getInteractionRevision(guildId: string): number {
+  touchGuildActivity(guildId)
   return interactionRevisionByGuild.get(guildId) ?? 0
 }
 
