@@ -50,15 +50,11 @@
       "countingEmoji": "Emoji sequence (🔵, 🟢, 🔴…)",
       "maxChannels": "Max. Managed Channels",
       "renameEnabled": "Enable icon rename menu",
-      "renameEnabledDesc": "Allow users to change their channel icon via an interactive select menu.",
-      "activityTracking": "Track voice activity",
-      "activityTrackingDesc": "Record activity duration per member for statistics."
+      "renameEnabledDesc": "Allow users to change their channel icon via an interactive select menu."
     },
     "stats": {
       "heading": "Statistics",
-      "managedChannels": "Managed Channels",
-      "trackedMembers": "Tracked Members",
-      "totalHours": "Total Hours Tracked"
+      "managedChannels": "Managed Channels"
     }
   },
   "admin": {

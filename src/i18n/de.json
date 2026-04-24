@@ -50,15 +50,11 @@
       "countingEmoji": "Emoji-Sequenz (🔵, 🟢, 🔴…)",
       "maxChannels": "Max. verwaltete Kanäle",
       "renameEnabled": "Icon-Umbenennungsmenü aktivieren",
-      "renameEnabledDesc": "Erlaubt Nutzern, ihr Kanal-Icon über ein Auswahlmenü zu ändern.",
-      "activityTracking": "Voice-Aktivität tracken",
-      "activityTrackingDesc": "Aufzeichnung der Voice-Aktivitätsdauer pro Mitglied für Statistiken."
+      "renameEnabledDesc": "Erlaubt Nutzern, ihr Kanal-Icon über ein Auswahlmenü zu ändern."
     },
     "stats": {
       "heading": "Statistiken",
-      "managedChannels": "Verwaltete Kanäle",
-      "trackedMembers": "Getrackte Mitglieder",
-      "totalHours": "Gesamt-Stunden getrackt"
+      "managedChannels": "Verwaltete Kanäle"
     }
   },
   "admin": {

@@ -119,11 +119,6 @@
               <input type="checkbox" v-model="form.renameEnabled" class="w-4 h-4" style="accent-color: var(--color-accent);" />
             </div>
 
-            <!-- activityTrackingEnabled -->
-            <div class="flex items-center justify-between gap-4">
-              <p class="font-semibold text-sm" :title="t('settings.config.activityTrackingDesc')">{{ t('settings.config.activityTracking') }}</p>
-              <input type="checkbox" v-model="form.activityTrackingEnabled" class="w-4 h-4" style="accent-color: var(--color-accent);" />
-            </div>
           </div>
 
           <!-- Save button -->
@@ -139,18 +134,10 @@
       <div class="card">
         <div class="p-6">
           <h2 class="mb-4 text-base font-semibold text-[var(--color-text-primary)]">{{ t('settings.stats.heading') }}</h2>
-          <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-1">
             <div class="stat">
               <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-secondary)]">{{ t('settings.stats.managedChannels') }}</div>
               <div class="text-2xl font-bold text-[var(--color-accent)]">{{ stats?.managedChannels ?? 0 }}</div>
-            </div>
-            <div class="stat">
-              <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-secondary)]">{{ t('settings.stats.trackedMembers') }}</div>
-              <div class="text-2xl font-bold text-[var(--color-accent)]">{{ stats?.trackedMembers ?? 0 }}</div>
-            </div>
-            <div class="stat">
-              <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-secondary)]">{{ t('settings.stats.totalHours') }}</div>
-              <div class="text-2xl font-bold text-[var(--color-accent)]">{{ totalHours }}</div>
             </div>
           </div>
         </div>
@@ -160,7 +147,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { useI18n, useFetch, $fetch } from '@guildora/hub'
 
 const { t } = useI18n()
@@ -176,18 +163,12 @@ const form = ref({
   defaultChannelName: config.value?.defaultChannelName ?? 'Voice Room',
   countingStyle: config.value?.countingStyle ?? 'numeric',
   maxManagedChannels: config.value?.maxManagedChannels ?? 50,
-  renameEnabled: config.value?.renameEnabled ?? true,
-  activityTrackingEnabled: config.value?.activityTrackingEnabled ?? true
+  renameEnabled: config.value?.renameEnabled ?? true
 })
 
 const saving = ref(false)
 const saveSuccess = ref(false)
 const saveError = ref(false)
-
-const totalHours = computed(() => {
-  const seconds = stats.value?.totalTrackedSeconds ?? 0
-  return (seconds / 3600).toFixed(1)
-})
 
 async function save() {
   saving.value = true
