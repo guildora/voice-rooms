@@ -13,11 +13,11 @@ const DEFAULT_MAX_MANAGED_CHANNELS = 50
 const DEFAULT_CHANNEL_ICON = '🔵'
 const DEFAULT_CHANNEL_NAME = 'Voice Room'
 
-function asString(value: unknown, fallback = ''): string {
+export function asString(value: unknown, fallback = ''): string {
   return typeof value === 'string' ? value.trim() : fallback
 }
 
-function asBoolean(value: unknown, fallback: boolean): boolean {
+export function asBoolean(value: unknown, fallback: boolean): boolean {
   return typeof value === 'boolean' ? value : fallback
 }
 

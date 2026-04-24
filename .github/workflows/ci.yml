@@ -1,0 +1,44 @@
+# CI Pipeline — Guildora Voice Rooms
+#
+# NOTE (D005): This workflow assumes NO package.json exists in the repo.
+# If a package.json is added in the future, this workflow MUST be updated
+# to include pnpm setup, dependency install, and potentially replace the
+# bare npx typescript invocation.
+
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validate manifest.json
+        run: python3 .github/ci/validate-manifest.py
+
+      - name: Check i18n key parity
+        run: python3 .github/ci/check-i18n-parity.py
+
+      - name: Generate tsconfig for syntax check
+        run: bash .github/ci/generate-tsconfig.sh
+
+      - name: TypeScript syntax check
+        run: npx -p typescript@5.6.3 tsc --noEmit -p tsconfig.ci.json

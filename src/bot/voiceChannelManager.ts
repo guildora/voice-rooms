@@ -113,7 +113,7 @@ let mapSweepTimer: ReturnType<typeof setInterval> | null = null
  */
 export function startMapSweep(intervalMs = 300_000, maxAgeMs = 1_800_000): void {
   stopMapSweep()
-  mapSweepTimer = setInterval(() => {
+  const timer = setInterval(() => {
     try {
       sweepStaleGuilds(maxAgeMs)
       // Also let TTLMap run its own sweep for interactionRevisionByGuild
@@ -122,9 +122,10 @@ export function startMapSweep(intervalMs = 300_000, maxAgeMs = 1_800_000): void 
       console.error('[voice-rooms] Guild map sweep error:', err)
     }
   }, intervalMs)
+  mapSweepTimer = timer
 
-  if (mapSweepTimer && typeof mapSweepTimer === 'object' && 'unref' in mapSweepTimer) {
-    mapSweepTimer.unref()
+  if (typeof (timer as any).unref === 'function') {
+    ;(timer as any).unref()
   }
 }
 

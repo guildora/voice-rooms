@@ -53,7 +53,7 @@ export class TTLMap<K, V> {
    */
   startSweep(intervalMs: number, maxAgeMs: number): void {
     this.stopSweep()
-    this.sweepTimer = setInterval(() => {
+    const timer = setInterval(() => {
       try {
         this.sweepOnce(maxAgeMs)
       } catch (err) {
@@ -61,10 +61,11 @@ export class TTLMap<K, V> {
         console.error('[voice-rooms] TTLMap sweep error:', err)
       }
     }, intervalMs)
+    this.sweepTimer = timer
 
     // Do not prevent Node.js process exit
-    if (this.sweepTimer && typeof this.sweepTimer === 'object' && 'unref' in this.sweepTimer) {
-      this.sweepTimer.unref()
+    if (typeof (timer as any).unref === 'function') {
+      ;(timer as any).unref()
     }
   }
 
