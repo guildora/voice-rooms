@@ -85,7 +85,7 @@
       "path": "/apps/voice-rooms/admin",
       "title": "Zugriffsrechte",
       "requiredRoles": ["admin"],
-      "component": "src/pages/admin.vue"
+      "component": "src/pages/NONEXISTENT.vue"
     }
   ],
   "apiRoutes": [
