@@ -53,6 +53,13 @@ const MANAGED_INDEX_KEY = 'tempvc:managed-index'
 const MANAGED_PREFIX = 'tempvc:managed:'
 
 const pendingTokensByGuild = new Map<string, Set<string>>()
+
+// Eviction contract: interactionRevisionByGuild is a TTLMap swept by two mechanisms:
+//   1. sweepStaleGuilds() — deletes the entry for any guild idle > maxAgeMs (called from startMapSweep)
+//   2. TTLMap.sweepOnce() — evicts entries whose last touch (get/set) is older than maxAgeMs
+// Both run on the startMapSweep timer. Active guilds stay alive via touchGuildActivity()
+// called from bumpInteractionRevision/getInteractionRevision. The map cannot leak as long
+// as startMapSweep() is called at bot startup.
 const interactionRevisionByGuild = new TTLMap<string, number>()
 const guildLockBusy = new Map<string, boolean>()
 const guildLockQueues = new Map<string, Array<() => void>>()
