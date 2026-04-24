@@ -5,12 +5,11 @@ import type {
   RoleChangePayload,
   VoiceActivityPayload
 } from '@guildora/app-sdk'
-import { handleTemporaryVoiceLifecycle, handleVoiceActivityTracker } from './events'
+import { handleTemporaryVoiceLifecycle } from './events'
 import { handleTemporaryVoiceInteractions } from './interactions'
 
 export async function onVoiceActivity(payload: VoiceActivityPayload, ctx: BotContext): Promise<void> {
   await handleTemporaryVoiceLifecycle(payload, ctx)
-  await handleVoiceActivityTracker(payload, ctx)
 }
 
 export async function onInteraction(payload: InteractionPayload, ctx: BotContext): Promise<void> {

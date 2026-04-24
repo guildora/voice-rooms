@@ -7,7 +7,6 @@ export interface TempVoiceConfig {
   countingStyle: 'numeric' | 'emoji'
   maxManagedChannels: number
   renameEnabled: boolean
-  activityTrackingEnabled: boolean
 }
 
 const DEFAULT_MAX_MANAGED_CHANNELS = 50
@@ -42,7 +41,6 @@ export function loadTempVoiceConfig(rawConfig: Record<string, unknown> | undefin
     defaultChannelName: asString(config.defaultChannelName, DEFAULT_CHANNEL_NAME) || DEFAULT_CHANNEL_NAME,
     countingStyle,
     maxManagedChannels: asPositiveInteger(config.maxManagedChannels, DEFAULT_MAX_MANAGED_CHANNELS),
-    renameEnabled: asBoolean(config.renameEnabled, true),
-    activityTrackingEnabled: asBoolean(config.activityTrackingEnabled, true)
+    renameEnabled: asBoolean(config.renameEnabled, true)
   }
 }

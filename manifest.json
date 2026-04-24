@@ -61,7 +61,7 @@
     {
       "id": "read:member",
       "label": "Read members",
-      "description": "Read member voice state for move and tracking logic.",
+      "description": "Read member voice state for move logic.",
       "required": false
     }
   ],
@@ -111,12 +111,6 @@
       "method": "GET",
       "path": "/api/apps/voice-rooms/settings",
       "handler": "src/api/settings.get.ts",
-      "requiredRoles": ["moderator"]
-    },
-    {
-      "method": "POST",
-      "path": "/api/apps/voice-rooms/announce",
-      "handler": "src/api/announce.post.ts",
       "requiredRoles": ["moderator"]
     }
   ],
@@ -187,13 +181,6 @@
       "type": "boolean",
       "label": "Icon-Umbenennungsmenü aktivieren",
       "description": "Erlaubt Nutzern, ihr Kanal-Icon über ein Auswahlmenü zu ändern.",
-      "defaultValue": true
-    },
-    {
-      "key": "activityTrackingEnabled",
-      "type": "boolean",
-      "label": "Voice-Aktivität tracken",
-      "description": "Aufzeichnung der Voice-Aktivitätsdauer für Statistiken.",
       "defaultValue": true
     }
   ],
